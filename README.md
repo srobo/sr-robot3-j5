@@ -1,5 +1,12 @@
 # sr.robot3
 
+[![SROBO](https://circleci.com/gh/srobo/sr-robot3.svg?style=svg)](https://app.circleci.com/pipelines/github/srobo/sr-robot3/)
+[![Maintainability](https://api.codeclimate.com/v1/badges/a25bdecbca1477c2d72e/maintainability)](https://codeclimate.com/github/srobo/sr-robot3/maintainability)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/a25bdecbca1477c2d72e/test_coverage)](https://codeclimate.com/github/srobo/sr-robot3/test_coverage)
+[![PyPI version](https://badge.fury.io/py/sr.robot3.svg)](https://pypi.org/project/sr.robot3/)
+[![MIT license](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat)](https://opensource.org/licenses/MIT)
+![Bees](https://img.shields.io/badge/bees-110%25-yellow.svg)
+
 Student Robotics API for Python 3
 
 This package uses [PEP420]()-style namespace packaging.
