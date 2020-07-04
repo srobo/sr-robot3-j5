@@ -2,10 +2,10 @@
 
 import logging
 
-from j5 import BaseRobot, BoardGroup, Environment
-from j5.boards import Board
+from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
-from j5.boards.sr.v4 import PowerBoard, MotorBoard, ServoBoard
+from j5.boards import Board
+from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 
 from .env import HardwareEnvironment
 
@@ -28,7 +28,7 @@ class Robot(BaseRobot):
             *,
             auto_start: bool = True,
             verbose: bool = False,
-            env: Environment = HardwareEnvironment
+            env: Environment = HardwareEnvironment,
     ) -> None:
         self._auto_start = auto_start
         self._verbose = verbose
@@ -42,8 +42,9 @@ class Robot(BaseRobot):
         LOGGER.debug(f"Environment: {self._environment.name}")
 
         self._init_power_board()
+        self._init_auxilliary_boards()
 
-        self._list_discovered_boards()
+        self._log_discovered_boards()
 
         if auto_start:
             LOGGER.debug("Auto start is enabled.")
@@ -57,20 +58,40 @@ class Robot(BaseRobot):
 
         The power board is is the only required board.
         """
-        self._power_boards = BoardGroup.get_board_group(
-            PowerBoard,
-            self._environment.get_backend(PowerBoard),
-        )
+        self._power_boards = self._environment.get_board_group(PowerBoard)
         self.power_board: PowerBoard = self._power_boards.singular()
 
         # Power on robot, so that we can find other boards.
         self.power_board.outputs.power_on()
+
+    def _init_auxilliary_boards(self) -> None:
+        """Find and initialise auxilliary boards."""
+        self.motor_boards = self._environment.get_board_group(MotorBoard)
+        self.servo_boards = self._environment.get_board_group(ServoBoard)
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
         for board in Board.BOARDS:
             LOGGER.info(f"Found {board.name} - {board.serial}")
             LOGGER.debug(f"Firmware Version of {board.serial}: {board.firmware_version}")
+
+    @property
+    def motor_board(self) -> MotorBoard:
+        """
+        Get the motor board.
+
+        A CommunicationError is raised if there isn't exactly one attached.
+        """
+        return self.motor_boards.singular()
+
+    @property
+    def servo_board(self) -> ServoBoard:
+        """
+        Get the servo board.
+
+        A CommunicationError is raised if there isn't exactly one attached.
+        """
+        return self.servo_boards.singular()
 
     def wait_start(self) -> None:
         """
