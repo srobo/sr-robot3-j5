@@ -30,14 +30,14 @@ class Robot(BaseRobot):
     ) -> None:
         self._auto_start = auto_start
         self._verbose = verbose
-        self._env = env
+        self._environment = env
         if verbose:
             LOGGER.setLevel(logging.DEBUG)
 
         LOGGER.info(f"sr.robot3 version {__version__}")
         LOGGER.debug("Verbose mode enabled.")
         LOGGER.debug(f"j5 version {j5_version}")
-        LOGGER.debug(f"Environment: {self._env.name}")
+        LOGGER.debug(f"Environment: {self._environment.name}")
 
         # Enumerate hardware here
 
