@@ -2,8 +2,9 @@
 
 import logging
 
-from j5 import BaseRobot, Environment
+from j5 import BaseRobot, BoardGroup, Environment
 from j5 import __version__ as j5_version
+from j5.boards.sr.v4 import PowerBoard, MotorBoard, ServoBoard
 
 from .env import HardwareEnvironment
 
@@ -39,13 +40,28 @@ class Robot(BaseRobot):
         LOGGER.debug(f"j5 version {j5_version}")
         LOGGER.debug(f"Environment: {self._environment.name}")
 
-        # Enumerate hardware here
+        self._init_power_board()
 
         if auto_start:
             LOGGER.debug("Auto start is enabled.")
             self.wait_start()
         else:
             LOGGER.debug("Auto start is disabled.")
+
+    def _init_power_board(self) -> None:
+        """
+        Find and initialise the power board.
+
+        The power board is is the only required board.
+        """
+        self._power_boards = BoardGroup.get_board_group(
+            PowerBoard,
+            self._environment.get_backend(PowerBoard),
+        )
+        self.power_board: PowerBoard = self._power_boards.singular()
+
+        # Power on robot, so that we can find other boards.
+        self.power_board.outputs.power_on()
 
     def wait_start(self) -> None:
         """
