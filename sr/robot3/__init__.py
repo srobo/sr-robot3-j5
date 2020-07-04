@@ -1,7 +1,8 @@
 """sr.robot3 - Student Robotics API for Python 3."""
 
+from .robot import Robot, __version__
+
 __all__ = [
     "__version__",
+    "Robot",
 ]
-
-__version__ = "2021.0.0a0.dev0"
