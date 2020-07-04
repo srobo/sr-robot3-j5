@@ -3,6 +3,7 @@
 import logging
 
 from j5 import BaseRobot, BoardGroup, Environment
+from j5.boards import Board
 from j5 import __version__ as j5_version
 from j5.boards.sr.v4 import PowerBoard, MotorBoard, ServoBoard
 
@@ -42,6 +43,8 @@ class Robot(BaseRobot):
 
         self._init_power_board()
 
+        self._list_discovered_boards()
+
         if auto_start:
             LOGGER.debug("Auto start is enabled.")
             self.wait_start()
@@ -62,6 +65,12 @@ class Robot(BaseRobot):
 
         # Power on robot, so that we can find other boards.
         self.power_board.outputs.power_on()
+
+    def _log_discovered_boards(self) -> None:
+        """Log all boards that we have discovered."""
+        for board in Board.BOARDS:
+            LOGGER.info(f"Found {board.name} - {board.serial}")
+            LOGGER.debug(f"Firmware Version of {board.serial}: {board.firmware_version}")
 
     def wait_start(self) -> None:
         """
