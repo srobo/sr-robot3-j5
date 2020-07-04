@@ -2,8 +2,10 @@
 
 import logging
 
-from j5 import BaseRobot
+from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
+
+from .env import HardwareEnvironment
 
 __version__ = "2021.0.0a0.dev0"
 
@@ -24,13 +26,18 @@ class Robot(BaseRobot):
             *,
             auto_start: bool = True,
             verbose: bool = False,
+            env: Environment = HardwareEnvironment
     ) -> None:
+        self._auto_start = auto_start
+        self._verbose = verbose
+        self._env = env
         if verbose:
             LOGGER.setLevel(logging.DEBUG)
 
         LOGGER.info(f"sr.robot3 version {__version__}")
         LOGGER.debug("Verbose mode enabled.")
         LOGGER.debug(f"j5 version {j5_version}")
+        LOGGER.debug(f"Environment: {self._env.name}")
 
         # Enumerate hardware here
 
