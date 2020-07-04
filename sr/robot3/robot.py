@@ -1,6 +1,7 @@
 """sr.robot3 Robot class."""
 
 import logging
+from pathlib import Path
 
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
@@ -92,6 +93,21 @@ class Robot(BaseRobot):
         A CommunicationError is raised if there isn't exactly one attached.
         """
         return self.servo_boards.singular()
+
+    @property
+    def is_competition(self) -> bool:
+        """Determine whether the robot is in competition mode."""
+        raise NotImplementedError()
+
+    @property
+    def usbkey(self) -> Path:
+        """The path of the USB code drive."""
+        raise NotImplementedError()
+
+    @property
+    def zone(self) -> int:
+        """The arena zone that the robot starts in."""
+        raise NotImplementedError()
 
     def wait_start(self) -> None:
         """
