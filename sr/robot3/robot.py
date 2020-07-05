@@ -8,7 +8,7 @@ from j5 import __version__ as j5_version
 from j5.boards import Board
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 
-from .env import HardwareEnvironment
+from .env import HARDWARE_ENVIRONMENT
 
 __version__ = "2021.0.0a0.dev0"
 
@@ -29,7 +29,7 @@ class Robot(BaseRobot):
             *,
             auto_start: bool = True,
             verbose: bool = False,
-            env: Environment = HardwareEnvironment,
+            env: Environment = HARDWARE_ENVIRONMENT,
     ) -> None:
         self._auto_start = auto_start
         self._verbose = verbose

@@ -1,4 +1,5 @@
 """Environment definitions."""
+
 from typing import Type, cast
 
 from j5.backends import Backend, Environment
@@ -14,17 +15,18 @@ from j5.backends.hardware.sr.v4 import (
 )
 
 __all__ = [
-    "HardwareEnvironment",
+    "HARDWARE_ENVIRONMENT",
+    "CONSOLE_ENVIRONMENT",
 ]
 
-HardwareEnvironment = Environment("Hardware Environment")
+HARDWARE_ENVIRONMENT = Environment("Hardware Environment")
 
-HardwareEnvironment.register_backend(cast(Type[Backend], SRV4PowerBoardHardwareBackend))
-HardwareEnvironment.register_backend(cast(Type[Backend], SRV4ServoBoardHardwareBackend))
-HardwareEnvironment.register_backend(cast(Type[Backend], SRV4MotorBoardHardwareBackend))
+HARDWARE_ENVIRONMENT.register_backend(cast(Type[Backend], SRV4PowerBoardHardwareBackend))
+HARDWARE_ENVIRONMENT.register_backend(cast(Type[Backend], SRV4ServoBoardHardwareBackend))
+HARDWARE_ENVIRONMENT.register_backend(cast(Type[Backend], SRV4MotorBoardHardwareBackend))
 
-ConsoleEnvironment = Environment("Console Environment")
+CONSOLE_ENVIRONMENT = Environment("Console Environment")
 
-ConsoleEnvironment.register_backend(cast(Type[Backend], SRV4PowerBoardConsoleBackend))
-ConsoleEnvironment.register_backend(cast(Type[Backend], SRV4ServoBoardConsoleBackend))
-ConsoleEnvironment.register_backend(cast(Type[Backend], SRV4MotorBoardConsoleBackend))
+CONSOLE_ENVIRONMENT.register_backend(cast(Type[Backend], SRV4PowerBoardConsoleBackend))
+CONSOLE_ENVIRONMENT.register_backend(cast(Type[Backend], SRV4ServoBoardConsoleBackend))
+CONSOLE_ENVIRONMENT.register_backend(cast(Type[Backend], SRV4MotorBoardConsoleBackend))
