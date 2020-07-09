@@ -1,7 +1,10 @@
 """Test that the sr.robot3 imports as expected."""
+from enum import Enum
+from typing import Type
 
 import sr.robot3
 from j5.boards.sr.v4 import PowerOutputPosition
+from j5.components.motor import MotorSpecialState
 from packaging.version import Version
 
 
@@ -13,10 +16,13 @@ def test_module_version() -> None:
     assert str(version) == sr.robot3.__version__
 
 
-def test_power_outputs_exported() -> None:
-    """Test that the power output constants are exported."""
-    EXPORT_PREFIX = "OUT_"
+def test_enum_constants_are_exported() -> None:
+    """Test that constants that are enums are exported at the top level."""
+    def check_enum_members_are_exported(enum: Type[Enum], prefix: str = "") -> None:
+        """Check that all members of an enum are exported at the top level."""
+        for member in enum:
+            member_from_module = getattr(sr.robot3, prefix + member.name)
+            assert member is member_from_module
 
-    for pos in PowerOutputPosition:
-        pos_from_module = getattr(sr.robot3, EXPORT_PREFIX + pos.name)
-        assert pos_from_module is pos
+    check_enum_members_are_exported(MotorSpecialState)
+    check_enum_members_are_exported(PowerOutputPosition, "OUT_")
