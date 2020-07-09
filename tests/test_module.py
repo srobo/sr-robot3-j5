@@ -4,6 +4,7 @@ from typing import Type
 
 import sr.robot3
 from j5.boards.sr.v4 import PowerOutputPosition
+from j5.components.gpio_pin import GPIOPinMode
 from j5.components.motor import MotorSpecialState
 from packaging.version import Version
 
@@ -24,5 +25,6 @@ def test_enum_constants_are_exported() -> None:
             member_from_module = getattr(sr.robot3, prefix + member.name)
             assert member is member_from_module
 
+    check_enum_members_are_exported(GPIOPinMode)
     check_enum_members_are_exported(MotorSpecialState)
     check_enum_members_are_exported(PowerOutputPosition, "OUT_")

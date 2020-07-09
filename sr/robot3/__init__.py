@@ -1,6 +1,7 @@
 """sr.robot3 - Student Robotics API for Python 3."""
 
 from j5.boards.sr.v4 import PowerOutputPosition
+from j5.components.gpio_pin import GPIOPinMode
 from j5.components.motor import MotorSpecialState
 from j5.components.piezo import Note
 
@@ -11,6 +12,15 @@ logger_setup()
 
 COAST = MotorSpecialState.COAST
 BRAKE = MotorSpecialState.BRAKE
+
+ANALOGUE_INPUT = GPIOPinMode.ANALOGUE_INPUT
+ANALOGUE_OUTPUT = GPIOPinMode.ANALOGUE_OUTPUT
+DIGITAL_INPUT = GPIOPinMode.DIGITAL_INPUT
+DIGITAL_INPUT_PULLUP = GPIOPinMode.DIGITAL_INPUT_PULLUP
+DIGITAL_INPUT_PULLDOWN = GPIOPinMode.DIGITAL_INPUT_PULLDOWN
+DIGITAL_OUTPUT = GPIOPinMode.DIGITAL_OUTPUT
+PWM_OUTPUT = GPIOPinMode.PWM_OUTPUT
+
 
 OUT_H0 = PowerOutputPosition.H0
 OUT_H1 = PowerOutputPosition.H1
