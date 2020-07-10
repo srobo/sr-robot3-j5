@@ -28,6 +28,9 @@ def test_enum_constants_are_exported() -> None:
             member_from_module = getattr(sr.robot3, transform(member.name))
             assert member is member_from_module
 
-    check_enum_members_are_exported(GPIOPinMode)
+    check_enum_members_are_exported(
+        GPIOPinMode,
+        lambda x: x[len("DIGITAL_"):] if x.startswith("DIGITAL_") else x,
+    )
     check_enum_members_are_exported(MotorSpecialState)
     check_enum_members_are_exported(PowerOutputPosition, lambda x: f"OUT_{x}")
