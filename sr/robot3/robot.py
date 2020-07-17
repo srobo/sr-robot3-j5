@@ -9,6 +9,7 @@ from j5.boards import Board
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 
 from .env import HARDWARE_ENVIRONMENT
+from .types import RobotMode
 
 __version__ = "2021.0.0a0.dev0"
 
@@ -95,8 +96,8 @@ class Robot(BaseRobot):
         return self.servo_boards.singular()
 
     @property
-    def is_competition(self) -> bool:
-        """Determine whether the robot is in competition mode."""
+    def mode(self) -> RobotMode:
+        """Determine the mode of the robot."""
         raise NotImplementedError()
 
     @property
