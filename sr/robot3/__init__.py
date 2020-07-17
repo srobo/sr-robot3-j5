@@ -7,6 +7,7 @@ from j5.components.piezo import Note
 
 from .logging import logger_setup
 from .robot import Robot, __version__
+from .types import RobotMode
 
 logger_setup()
 
@@ -21,6 +22,8 @@ INPUT_PULLDOWN = GPIOPinMode.DIGITAL_INPUT_PULLDOWN
 OUTPUT = GPIOPinMode.DIGITAL_OUTPUT
 PWM_OUTPUT = GPIOPinMode.PWM_OUTPUT
 
+COMP = RobotMode.COMP
+DEV = RobotMode.DEV
 
 OUT_H0 = PowerOutputPosition.H0
 OUT_H1 = PowerOutputPosition.H1
@@ -33,6 +36,8 @@ __all__ = [
     "__version__",
     "BRAKE",
     "COAST",
+    "COMP",
+    "DEV",
     "OUT_H0",
     "OUT_H1",
     "OUT_L0",
