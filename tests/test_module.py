@@ -26,8 +26,10 @@ def test_enum_constants_are_exported() -> None:
     ) -> None:
         """Check that all members of an enum are exported at the top level."""
         for member in enum:
-            member_from_module = getattr(sr.robot3, transform(member.name))
+            constant_name = transform(member.name)
+            member_from_module = getattr(sr.robot3, constant_name)
             assert member is member_from_module
+            assert constant_name in sr.robot3.__all__
 
     check_enum_members_are_exported(
         GPIOPinMode,
