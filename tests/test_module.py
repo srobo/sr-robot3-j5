@@ -38,3 +38,13 @@ def test_enum_constants_are_exported() -> None:
     check_enum_members_are_exported(MotorSpecialState)
     check_enum_members_are_exported(PowerOutputPosition, lambda x: f"OUT_{x}")
     check_enum_members_are_exported(RobotMode)
+
+
+def test_all_is_sorted() -> None:
+    """
+    Test that __all__ is sorted.
+
+    Probably should be covered by linting, but this will determine the order
+    that some IDEs display things in for code completion.
+    """
+    assert sorted(sr.robot3.__all__) == sr.robot3.__all__

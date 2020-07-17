@@ -33,7 +33,6 @@ OUT_L2 = PowerOutputPosition.L2
 OUT_L3 = PowerOutputPosition.L3
 
 __all__ = [
-    "__version__",
     "ANALOGUE_INPUT",
     "ANALOGUE_OUTPUT",
     "BRAKE",
@@ -41,16 +40,17 @@ __all__ = [
     "COMP",
     "DEV",
     "INPUT",
-    "INPUT_PULLUP",
     "INPUT_PULLDOWN",
+    "INPUT_PULLUP",
+    "Note",
+    "OUTPUT",
     "OUT_H0",
     "OUT_H1",
     "OUT_L0",
     "OUT_L1",
     "OUT_L2",
     "OUT_L3",
-    "OUTPUT",
     "PWM_OUTPUT",
-    "Note",
     "Robot",
+    "__version__",
 ]
