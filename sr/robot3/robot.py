@@ -7,7 +7,6 @@ from typing import Dict, List, Optional
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
 from j5.backends import Backend
-from j5.backends.hardware.sr.v4.ruggeduino import SRV4RuggeduinoHardwareBackend
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
@@ -94,28 +93,27 @@ class Robot(BaseRobot):
         Ignore any that the user has specified.
         """
         IGNORED: Dict[str, str] = {}
-        if self._environment is HARDWARE_ENVIRONMENT:
 
-            class IgnoredRuggeduinoBackend(SRV4RuggeduinoHardwareBackend):
-                """A backend that ignores some ruggeduinos."""
+        ruggeduino_backend = self._environment.get_backend(Ruggeduino)
 
-                @classmethod
-                def is_arduino(cls, port: ListPortInfo) -> bool:
-                    """Check if a ListPortInfo represents a valid Arduino derivative."""
-                    if port.serial_number in self._ignored_ruggeduino_serials:
-                        IGNORED[port.serial_number] = port.device
-                        return False
-                    return (port.vid, port.pid) in cls.USB_IDS
+        class IgnoredRuggeduinoBackend(ruggeduino_backend):  # type: ignore
+            """A backend that ignores some ruggeduinos."""
 
-            self.ruggeduinos: BoardGroup[
-                Ruggeduino,
-                Backend,
-            ] = BoardGroup.get_board_group(
-                Ruggeduino,
-                IgnoredRuggeduinoBackend,
-            )
-        else:
-            self.ruggeduinos = self._environment.get_board_group(Ruggeduino)
+            @classmethod
+            def is_arduino(cls, port: ListPortInfo) -> bool:
+                """Check if a ListPortInfo represents a valid Arduino derivative."""
+                if port.serial_number in self._ignored_ruggeduino_serials:
+                    IGNORED[port.serial_number] = port.device
+                    return False
+                return (port.vid, port.pid) in cls.USB_IDS
+
+        self.ruggeduinos: BoardGroup[
+            Ruggeduino,
+            Backend,
+        ] = BoardGroup.get_board_group(
+            Ruggeduino,
+            IgnoredRuggeduinoBackend,
+        )
 
         self.ignored_ruggeduinos = IGNORED
 
