@@ -237,7 +237,7 @@ description = "j5 Robotics Framework"
 name = "j5"
 optional = false
 python-versions = ">=3.6,<4.0"
-version = "0.9.3"
+version = "0.10.0"
 
 [package.dependencies]
 cached_property = ">=1.5.1,<2.0.0"
@@ -522,7 +522,8 @@ docs = ["sphinx", "jaraco.packaging (>=3.2)", "rst.linker (>=1.9)"]
 testing = ["jaraco.itertools", "func-timeout"]
 
 [metadata]
-content-hash = "63fc6d4651d37fb465c5eab345e52ea62996a6bb32208a82468f5f27d1c360d4"
+content-hash = "10dd9e9cab81444d08e8d9c1281aec0a1d0963f57d9c4a54ebc8ec7a0c7c6e76"
+lock-version = "1.0"
 python-versions = "^3.6"
 
 [metadata.files]
@@ -625,8 +626,8 @@ isort = [
     {file = "isort-4.3.21.tar.gz", hash = "sha256:54da7e92468955c4fceacd0c86bd0ec997b0e1ee80d97f67c35a78b719dccab1"},
 ]
 j5 = [
-    {file = "j5-0.9.3-py3-none-any.whl", hash = "sha256:8f7edc4e75dca182eaf92178fceffd31c19df1b4a708e806a83e110f7d8bda91"},
-    {file = "j5-0.9.3.tar.gz", hash = "sha256:ad649d362892c489716320b07f753a52cc9ddb6d3fe14afc219843a0c574545a"},
+    {file = "j5-0.10.0-py3-none-any.whl", hash = "sha256:5343982557bc920384ee3be713ba593cec2cd43c2c2b6e6ea50c741c86730240"},
+    {file = "j5-0.10.0.tar.gz", hash = "sha256:42081c94ab78ded5faed8dd922bcfcb4f10dbaa93b1bfc12144556f10013e5b1"},
 ]
 mccabe = [
     {file = "mccabe-0.6.1-py2.py3-none-any.whl", hash = "sha256:ab8a6258860da4b6677da4bd2fe5dc2c659cff31b3ee4f7f5d64e79735b80d42"},

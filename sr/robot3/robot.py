@@ -74,8 +74,10 @@ class Robot(BaseRobot):
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
         for board in Board.BOARDS:
-            LOGGER.info(f"Found {board.name} - {board.serial}")
-            LOGGER.debug(f"Firmware Version of {board.serial}: {board.firmware_version}")
+            LOGGER.info(f"Found {board.name} - {board.serial_number}")
+            LOGGER.debug(
+                f"Firmware Version of {board.serial_number}: {board.firmware_version}",
+            )
 
     @property
     def motor_board(self) -> MotorBoard:
