@@ -9,8 +9,8 @@ from j5.backends.console.sr.v4 import (
 from j5.backends.hardware.sr.v4 import (
     SRV4MotorBoardHardwareBackend,
     SRV4PowerBoardHardwareBackend,
+    SRV4RuggeduinoHardwareBackend,
     SRV4ServoBoardHardwareBackend,
-    SRV4RuggeduinoHardwareBackend
 )
 
 __all__ = [

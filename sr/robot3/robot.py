@@ -7,6 +7,7 @@ from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
 from j5.boards import Board
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
+from j5.boards.sr.v4.ruggeduino import Ruggeduino
 
 from .env import HARDWARE_ENVIRONMENT
 from .types import RobotMode
@@ -70,6 +71,7 @@ class Robot(BaseRobot):
         """Find and initialise auxilliary boards."""
         self.motor_boards = self._environment.get_board_group(MotorBoard)
         self.servo_boards = self._environment.get_board_group(ServoBoard)
+        self.ruggeduinos = self._environment.get_board_group(Ruggeduino)
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
@@ -87,6 +89,15 @@ class Robot(BaseRobot):
         A CommunicationError is raised if there isn't exactly one attached.
         """
         return self.motor_boards.singular()
+
+    @property
+    def ruggeduino(self) -> Ruggeduino:
+        """
+        Get the ruggeduino.
+
+        A CommunicationError is raised if there isn't exactly one attached.
+        """
+        return self.ruggeduinos.singular()
 
     @property
     def servo_board(self) -> ServoBoard:
