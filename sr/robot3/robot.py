@@ -2,12 +2,16 @@
 
 import logging
 from pathlib import Path
+from typing import List, Optional
 
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
-from j5.boards import Board
+from j5.backends import Backend
+from j5.backends.hardware.sr.v4.ruggeduino import SRV4RuggeduinoHardwareBackend
+from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
+from serial.tools.list_ports_common import ListPortInfo
 
 from .env import HARDWARE_ENVIRONMENT
 from .types import RobotMode
@@ -32,10 +36,17 @@ class Robot(BaseRobot):
             auto_start: bool = True,
             verbose: bool = False,
             env: Environment = HARDWARE_ENVIRONMENT,
+            ignored_ruggeduinos: Optional[List[str]] = None,
     ) -> None:
         self._auto_start = auto_start
         self._verbose = verbose
         self._environment = env
+
+        if ignored_ruggeduinos is None:
+            self._ignored_ruggeduino_serials = []
+        else:
+            self._ignored_ruggeduino_serials = ignored_ruggeduinos
+
         if verbose:
             LOGGER.setLevel(logging.DEBUG)
 
@@ -46,6 +57,8 @@ class Robot(BaseRobot):
 
         self._init_power_board()
         self._init_auxilliary_boards()
+
+        self._init_ruggeduinos()
 
         self._log_discovered_boards()
 
@@ -71,7 +84,36 @@ class Robot(BaseRobot):
         """Find and initialise auxilliary boards."""
         self.motor_boards = self._environment.get_board_group(MotorBoard)
         self.servo_boards = self._environment.get_board_group(ServoBoard)
-        self.ruggeduinos = self._environment.get_board_group(Ruggeduino)
+
+    def _init_ruggeduinos(self) -> None:
+        """
+        Initialise the ruggeduinos.
+
+        Ignore any that the user has specified.
+        """
+        if self._environment is HARDWARE_ENVIRONMENT:
+
+            IGNORED = self._ignored_ruggeduino_serials
+
+            class IgnoredRuggeduinoBackend(SRV4RuggeduinoHardwareBackend):
+                """A backend that ignores some ruggeduinos."""
+
+                @classmethod
+                def is_arduino(cls, port: ListPortInfo) -> bool:
+                    """Check if a ListPortInfo represents a valid Arduino derivative."""
+                    if port.serial_number in IGNORED:
+                        return False
+                    return (port.vid, port.pid) in cls.USB_IDS
+
+            self.ruggeduinos: BoardGroup[
+                Ruggeduino,
+                Backend,
+            ] = BoardGroup.get_board_group(
+                Ruggeduino,
+                IgnoredRuggeduinoBackend,
+            )
+        else:
+            self.ruggeduinos = self._environment.get_board_group(Ruggeduino)
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
