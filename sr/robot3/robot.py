@@ -2,7 +2,7 @@
 
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
@@ -30,7 +30,7 @@ class Robot(BaseRobot):
     of this class on a given machine.
     """
 
-    ignored_ruggeduinos: Optional[List[str]]
+    ignored_ruggeduinos: Dict[str, str]
 
     def __init__(
             self,
@@ -93,9 +93,8 @@ class Robot(BaseRobot):
 
         Ignore any that the user has specified.
         """
+        IGNORED: Dict[str, str] = {}
         if self._environment is HARDWARE_ENVIRONMENT:
-
-            IGNORED: List[str] = []
 
             class IgnoredRuggeduinoBackend(SRV4RuggeduinoHardwareBackend):
                 """A backend that ignores some ruggeduinos."""
@@ -104,7 +103,7 @@ class Robot(BaseRobot):
                 def is_arduino(cls, port: ListPortInfo) -> bool:
                     """Check if a ListPortInfo represents a valid Arduino derivative."""
                     if port.serial_number in self._ignored_ruggeduino_serials:
-                        IGNORED.append(port.device)
+                        IGNORED[port.serial_number] = port.device
                         return False
                     return (port.vid, port.pid) in cls.USB_IDS
 
@@ -115,10 +114,10 @@ class Robot(BaseRobot):
                 Ruggeduino,
                 IgnoredRuggeduinoBackend,
             )
-            self.ignored_ruggeduinos = IGNORED
         else:
             self.ruggeduinos = self._environment.get_board_group(Ruggeduino)
-            self.ignored_ruggeduinos = None
+
+        self.ignored_ruggeduinos = IGNORED
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
