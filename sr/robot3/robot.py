@@ -6,7 +6,6 @@ from typing import Dict, List, Optional
 
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
-from j5.backends import Backend
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
@@ -107,10 +106,7 @@ class Robot(BaseRobot):
                     return False
                 return (port.vid, port.pid) in cls.USB_IDS
 
-        self.ruggeduinos: BoardGroup[
-            Ruggeduino,
-            Backend,
-        ] = BoardGroup.get_board_group(
+        self.ruggeduinos = BoardGroup.get_board_group(
             Ruggeduino,
             IgnoredRuggeduinoBackend,
         )
