@@ -28,8 +28,6 @@ class Robot(BaseRobot):
     of this class on a given machine.
     """
 
-    ignored_ruggeduinos: Dict[str, str]
-
     def __init__(
             self,
             *,
@@ -91,7 +89,7 @@ class Robot(BaseRobot):
 
         Ignore any that the user has specified.
         """
-        IGNORED: Dict[str, str] = {}
+        self.ignored_ruggeduinos: Dict[str, str] = {}
 
         ruggeduino_backend = self._environment.get_backend(Ruggeduino)
 
@@ -102,16 +100,14 @@ class Robot(BaseRobot):
             def is_arduino(cls, port: ListPortInfo) -> bool:
                 """Check if a ListPortInfo represents a valid Arduino derivative."""
                 if port.serial_number in self._ignored_ruggeduino_serials:
-                    IGNORED[port.serial_number] = port.device
+                    self.ignored_ruggeduinos[port.serial_number] = port.device
                     return False
-                return (port.vid, port.pid) in cls.USB_IDS
+                return super().is_arduino(port)  # type: ignore
 
         self.ruggeduinos = BoardGroup.get_board_group(
             Ruggeduino,
             IgnoredRuggeduinoBackend,
         )
-
-        self.ignored_ruggeduinos = IGNORED
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
