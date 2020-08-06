@@ -1,7 +1,9 @@
 """sr.robot3 Robot class."""
 
 import logging
+from argparse import ArgumentParser
 from pathlib import Path
+from stat import S_ISFIFO
 from typing import Dict, List, Optional
 
 from j5 import BaseRobot, Environment
@@ -40,13 +42,15 @@ class Robot(BaseRobot):
         self._verbose = verbose
         self._environment = env
 
+        if verbose:
+            LOGGER.setLevel(logging.DEBUG)
+
+        self._parse_arguments()
+
         if ignored_ruggeduinos is None:
             self._ignored_ruggeduino_serials = []
         else:
             self._ignored_ruggeduino_serials = ignored_ruggeduinos
-
-        if verbose:
-            LOGGER.setLevel(logging.DEBUG)
 
         LOGGER.info(f"sr.robot3 version {__version__}")
         LOGGER.debug("Verbose mode enabled.")
@@ -117,6 +121,39 @@ class Robot(BaseRobot):
                 f"Firmware Version of {board.serial_number}: {board.firmware_version}",
             )
 
+    def _parse_arguments(self) -> None:
+        """Parse arguments to the program."""
+        parser = ArgumentParser(description="Robot Usercode Program")
+        parser.add_argument(
+            "--usbkey",
+            type=Path,
+            help="The path of the (non-volatile) user USB key",
+        )
+        parser.add_argument(
+            "--startfifo",
+            type=Path,
+            help="The named pipe which start info will be received through",
+        )
+        args = parser.parse_args()
+
+        self._usbkey: Optional[Path] = None
+
+        if args.usbkey:
+            if args.usbkey.exists() and args.usbkey.is_dir():
+                self._usbkey = args.usbkey
+                LOGGER.debug(f"USBkey is at {self._usbkey}")
+            else:
+                LOGGER.warn("Invalid usbkey supplied as argument")
+
+        self._startfifo: Optional[Path] = None
+
+        if args.startfifo:
+            if args.startfifo.exists() and S_ISFIFO(args.startfifo.stat().st_mode):
+                self._startfifo = args.startfifo
+                LOGGER.debug(f"StartFIFO is at {self._startfifo}")
+            else:
+                LOGGER.warn("Invalid StartFIFO supplied as argument")
+
     @property
     def motor_board(self) -> MotorBoard:
         """
@@ -150,9 +187,9 @@ class Robot(BaseRobot):
         raise NotImplementedError()
 
     @property
-    def usbkey(self) -> Path:
+    def usbkey(self) -> Optional[Path]:
         """The path of the USB code drive."""
-        raise NotImplementedError()
+        return self._usbkey
 
     @property
     def zone(self) -> int:
