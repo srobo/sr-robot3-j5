@@ -6,7 +6,7 @@ authors = ["Student Robotics <kit-brain@studentrobotics.org>"]
 license = "MIT"
 readme = "README.md"
 repository = "https://github.com/srobo/sr-robot3"
-homepage = "https://github.com/sr-robot3"
+homepage = "https://github.com/srobo/sr-robot3"
 documentation = "https://studentrobotics.org/docs"
 classifiers = [
     "Topic :: Software Development :: Libraries :: Python Modules",
