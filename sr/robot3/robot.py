@@ -1,10 +1,11 @@
 """sr.robot3 Robot class."""
 
+import json
 import logging
 from argparse import ArgumentParser
 from pathlib import Path
 from stat import S_ISFIFO
-from typing import Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
@@ -14,6 +15,7 @@ from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from serial.tools.list_ports_common import ListPortInfo
 
 from .env import HARDWARE_ENVIRONMENT
+from .exceptions import BadFifoException, MetadataErrorException
 from .types import RobotMode
 
 __version__ = "2021.0.0a0.dev0"
@@ -149,7 +151,7 @@ class Robot(BaseRobot):
 
         if args.startfifo:
             if args.startfifo.exists() and S_ISFIFO(args.startfifo.stat().st_mode):
-                self._startfifo = args.startfifo
+                self._startfifo = args.startfifo.resolve()
                 LOGGER.debug(f"StartFIFO is at {self._startfifo}")
             else:
                 LOGGER.warn("Invalid StartFIFO supplied as argument")
@@ -184,7 +186,7 @@ class Robot(BaseRobot):
     @property
     def mode(self) -> RobotMode:
         """Determine the mode of the robot."""
-        raise NotImplementedError()
+        return self._mode
 
     @property
     def usbkey(self) -> Optional[Path]:
@@ -194,7 +196,7 @@ class Robot(BaseRobot):
     @property
     def zone(self) -> int:
         """The arena zone that the robot starts in."""
-        raise NotImplementedError()
+        return self._zone
 
     def wait_start(self) -> None:
         """
@@ -203,8 +205,34 @@ class Robot(BaseRobot):
         Intended for use with `Robot(auto_start=False)`, to allow
         students to run code and setup their robot before the start
         of a match.
+
+        Currently implemented to be compatible with herdsman.
         """
         LOGGER.info("Waiting for start signal")
 
-        raise NotImplementedError()
-        LOGGER.info("Start signal received; continuing.")
+        if self._startfifo is None:
+            raise BadFifoException(
+                "No valid startfifo was supplied. Unable to wait for start.",
+            )
+        else:
+            with open(self._startfifo, "r") as fh:
+                raw_data = fh.read()
+            try:
+                data: Any = json.loads(raw_data)
+            except json.decoder.JSONDecodeError as e:
+                raise MetadataErrorException("Bad JSON data.") from e
+
+            try:
+                self._mode = RobotMode(data["mode"])
+                self._arena = str(data["mode"])
+                self._zone = int(data["zone"])
+            except TypeError:
+                raise MetadataErrorException(
+                    f"Expected JSON object, received {type(data)}.",
+                ) from None
+            except KeyError:
+                raise MetadataErrorException(
+                    "Missing keys in metadata",
+                ) from None
+
+            LOGGER.info("Start signal received; continuing.")
