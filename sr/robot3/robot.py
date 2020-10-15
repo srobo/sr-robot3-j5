@@ -1,8 +1,11 @@
 """sr.robot3 Robot class."""
 
+import json
 import logging
+from argparse import ArgumentParser
 from pathlib import Path
-from typing import Dict, List, Optional
+from stat import S_ISFIFO
+from typing import Any, Dict, List, Optional
 
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
@@ -12,6 +15,7 @@ from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from serial.tools.list_ports_common import ListPortInfo
 
 from .env import HARDWARE_ENVIRONMENT
+from .exceptions import BadFifoException, MetadataErrorException
 from .types import RobotMode
 
 __version__ = "2021.0.0a0.dev0"
@@ -40,13 +44,15 @@ class Robot(BaseRobot):
         self._verbose = verbose
         self._environment = env
 
+        if verbose:
+            LOGGER.setLevel(logging.DEBUG)
+
+        self._parse_arguments()
+
         if ignored_ruggeduinos is None:
             self._ignored_ruggeduino_serials = []
         else:
             self._ignored_ruggeduino_serials = ignored_ruggeduinos
-
-        if verbose:
-            LOGGER.setLevel(logging.DEBUG)
 
         LOGGER.info(f"sr.robot3 version {__version__}")
         LOGGER.debug("Verbose mode enabled.")
@@ -117,6 +123,39 @@ class Robot(BaseRobot):
                 f"Firmware Version of {board.serial_number}: {board.firmware_version}",
             )
 
+    def _parse_arguments(self) -> None:
+        """Parse arguments to the program."""
+        parser = ArgumentParser(description="Robot Usercode Program")
+        parser.add_argument(
+            "--usbkey",
+            type=Path,
+            help="The path of the (non-volatile) user USB key",
+        )
+        parser.add_argument(
+            "--startfifo",
+            type=Path,
+            help="The named pipe which start info will be received through",
+        )
+        args = parser.parse_args()
+
+        self._usbkey: Optional[Path] = None
+
+        if args.usbkey:
+            if args.usbkey.exists() and args.usbkey.is_dir():
+                self._usbkey = args.usbkey
+                LOGGER.debug(f"USBkey is at {self._usbkey}")
+            else:
+                LOGGER.warn("Invalid usbkey supplied as argument")
+
+        self._startfifo: Optional[Path] = None
+
+        if args.startfifo:
+            if args.startfifo.exists() and S_ISFIFO(args.startfifo.stat().st_mode):
+                self._startfifo = args.startfifo.resolve()
+                LOGGER.debug(f"StartFIFO is at {self._startfifo}")
+            else:
+                LOGGER.warn("Invalid StartFIFO supplied as argument")
+
     @property
     def motor_board(self) -> MotorBoard:
         """
@@ -147,17 +186,17 @@ class Robot(BaseRobot):
     @property
     def mode(self) -> RobotMode:
         """Determine the mode of the robot."""
-        raise NotImplementedError()
+        return self._mode
 
     @property
-    def usbkey(self) -> Path:
+    def usbkey(self) -> Optional[Path]:
         """The path of the USB code drive."""
-        raise NotImplementedError()
+        return self._usbkey
 
     @property
     def zone(self) -> int:
         """The arena zone that the robot starts in."""
-        raise NotImplementedError()
+        return self._zone
 
     def wait_start(self) -> None:
         """
@@ -166,8 +205,34 @@ class Robot(BaseRobot):
         Intended for use with `Robot(auto_start=False)`, to allow
         students to run code and setup their robot before the start
         of a match.
+
+        Currently implemented to be compatible with herdsman.
         """
         LOGGER.info("Waiting for start signal")
 
-        raise NotImplementedError()
-        LOGGER.info("Start signal received; continuing.")
+        if self._startfifo is None:
+            raise BadFifoException(
+                "No valid startfifo was supplied. Unable to wait for start.",
+            )
+        else:
+            with open(self._startfifo, "r") as fh:
+                raw_data = fh.read()
+            try:
+                data: Any = json.loads(raw_data)
+            except json.decoder.JSONDecodeError as e:
+                raise MetadataErrorException(f"Bad JSON data: {raw_data!r}") from e
+
+            try:
+                self._mode = RobotMode(data["mode"])
+                self._arena = str(data["arena"])
+                self._zone = int(data["zone"])
+            except TypeError:
+                raise MetadataErrorException(
+                    f"Expected JSON object, received {type(data)}.",
+                ) from None
+            except KeyError:
+                raise MetadataErrorException(
+                    "Missing keys in metadata",
+                )
+
+            LOGGER.info("Start signal received; continuing.")
