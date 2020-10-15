@@ -220,11 +220,11 @@ class Robot(BaseRobot):
             try:
                 data: Any = json.loads(raw_data)
             except json.decoder.JSONDecodeError as e:
-                raise MetadataErrorException("Bad JSON data.") from e
+                raise MetadataErrorException(f"Bad JSON data: {raw_data!r}") from e
 
             try:
                 self._mode = RobotMode(data["mode"])
-                self._arena = str(data["mode"])
+                self._arena = str(data["arena"])
                 self._zone = int(data["zone"])
             except TypeError:
                 raise MetadataErrorException(
@@ -233,6 +233,6 @@ class Robot(BaseRobot):
             except KeyError:
                 raise MetadataErrorException(
                     "Missing keys in metadata",
-                ) from None
+                )
 
             LOGGER.info("Start signal received; continuing.")
