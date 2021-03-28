@@ -59,7 +59,7 @@ class Robot(BaseRobot):
         self._init_power_board()
         self._init_auxilliary_boards()
 
-        self._init_ruggeduinos()
+        # self._init_ruggeduinos()
 
         self._log_discovered_boards()
 
@@ -114,7 +114,7 @@ class Robot(BaseRobot):
 
     def _init_metadata(self) -> None:
         """Fetch metadata from Astoria."""
-        self._metadata = GetMetadataConsumer.get_metadata()
+        self._metadata, self._code_path = GetMetadataConsumer.get_metadata()
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
@@ -169,7 +169,7 @@ class Robot(BaseRobot):
     @property
     def usbkey(self) -> Optional[Path]:
         """The path of the USB code drive."""
-        raise NotImplementedError()
+        return self._code_path
 
     @property
     def zone(self) -> int:
