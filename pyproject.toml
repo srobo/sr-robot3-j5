@@ -21,6 +21,7 @@ python = "^3.6"
 j5 = "^0.10.0"
 pyserial = "^3.4"
 
+
 [tool.poetry.dev-dependencies]
 flake8 = "*"
 flake8-bugbear = "*"
