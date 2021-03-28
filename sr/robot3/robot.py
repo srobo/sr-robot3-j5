@@ -41,13 +41,13 @@ class Robot(BaseRobot):
         self._verbose = verbose
         self._environment = env
 
+        if verbose:
+            LOGGER.setLevel(logging.DEBUG)
+
         if ignored_ruggeduinos is None:
             self._ignored_ruggeduino_serials = []
         else:
             self._ignored_ruggeduino_serials = ignored_ruggeduinos
-
-        if verbose:
-            LOGGER.setLevel(logging.DEBUG)
 
         LOGGER.info(f"sr.robot3 version {__version__}")
         LOGGER.debug("Verbose mode enabled.")
@@ -167,7 +167,7 @@ class Robot(BaseRobot):
         return self.metadata.mode
 
     @property
-    def usbkey(self) -> Path:
+    def usbkey(self) -> Optional[Path]:
         """The path of the USB code drive."""
         raise NotImplementedError()
 
@@ -183,8 +183,9 @@ class Robot(BaseRobot):
         Intended for use with `Robot(auto_start=False)`, to allow
         students to run code and setup their robot before the start
         of a match.
+
+        Currently implemented to be compatible with herdsman.
         """
         LOGGER.info("Waiting for start signal")
-
         raise NotImplementedError()
         LOGGER.info("Start signal received; continuing.")
