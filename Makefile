@@ -11,7 +11,8 @@ lint:
 	$(CMD) flake8 $(PYMODULE) $(TESTS) $(EXTRACODE)
 
 type:
-	$(CMD) mypy --namespace-packages $(PYMODULE) $(TESTS) $(EXTRACODE)
+	$(CMD) mypy --namespace-packages -p sr.robot3
+	$(CMD) mypy --namespace-packages $(TESTS) $(EXTRACODE)
 
 test:
 	$(CMD) pytest --cov=$(PYMODULE) $(TESTS)
@@ -23,7 +24,7 @@ test-ci:
 	$(CMD) pytest --cov=$(PYMODULE) $(TESTS) --cov-report xml
 
 isort:
-	$(CMD) isort --recursive $(PYMODULE) $(TESTS) $(EXTRACODE)
+	$(CMD) isort $(PYMODULE) $(TESTS) $(EXTRACODE)
 
 clean:
 	git clean -Xdf # Delete all files in .gitignore
