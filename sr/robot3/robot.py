@@ -1,6 +1,8 @@
 """sr.robot3 Robot class."""
 
+import asyncio
 import logging
+from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List, Optional
 
@@ -10,14 +12,17 @@ from j5 import __version__ as j5_version
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
+from j5.components.piezo import Note
 from serial.tools.list_ports_common import ListPortInfo
 
-from .astoria import GetMetadataConsumer
+from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 
 __version__ = "2021.0.0a0.dev0"
 
 LOGGER = logging.getLogger(__name__)
+
+loop = asyncio.get_event_loop()
 
 
 class Robot(BaseRobot):
@@ -187,5 +192,33 @@ class Robot(BaseRobot):
         Currently implemented to be compatible with herdsman.
         """
         LOGGER.info("Waiting for start signal")
-        raise NotImplementedError()
+
+        astoria_start = WaitForStartButtonBroadcastConsumer(self._verbose, None)
+        flash_loop = True
+
+        async def wait_for_physical_start() -> None:
+            self.power_board.piezo.buzz(timedelta(seconds=0.1), Note.A6)
+            counter = 0
+            led_state = False
+            while not self.power_board.start_button.is_pressed and flash_loop:
+                if counter % 6 == 0:
+                    led_state = not led_state
+                    self.power_board._run_led.state = led_state
+                await asyncio.sleep(0.05)
+                counter += 1
+            # Turn on the LED now that we are starting
+            self.power_board._run_led.state = True
+
+        loop.run_until_complete(
+            asyncio.wait(
+                [
+                    astoria_start.run(),
+                    wait_for_physical_start(),
+                ],
+                return_when=asyncio.FIRST_COMPLETED,
+            ),
+        )
+
+        flash_loop = False  # Stop the flashing loop
+
         LOGGER.info("Start signal received; continuing.")

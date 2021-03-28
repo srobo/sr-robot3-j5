@@ -6,9 +6,11 @@ from json import JSONDecodeError, loads
 from pathlib import Path
 from typing import Match, NamedTuple, Optional
 
+from astoria.common.broadcast_event import StartButtonBroadcastEvent
 from astoria.common.consumer import StateConsumer
 from astoria.common.messages.astmetad import Metadata, MetadataManagerMessage
 from astoria.common.messages.astprocd import ProcessManagerMessage
+from astoria.common.mqtt.broadcast_helper import BroadcastHelper
 
 LOGGER = logging.getLogger(__name__)
 
@@ -103,3 +105,29 @@ class GetMetadataConsumer(StateConsumer):
             LOGGER.warning("Astoria took too long to respond, giving up.")
 
         return GetMetadataResult(metadata, path)
+
+
+class WaitForStartButtonBroadcastConsumer(StateConsumer):
+    """Wait for a start button broadcast."""
+
+    name_prefix = "sr-robot3-wait-start"
+
+    def _setup_logging(self, verbose: bool, *, welcome_message: bool = True) -> None:
+        """Use the logging from sr-robot3."""
+        # Suppress INFO messages from gmqtt
+        logging.getLogger("gmqtt").setLevel(logging.WARNING)
+
+    def _init(self) -> None:
+        """
+        Initialisation of the data component.
+
+        Called in the constructor of the parent class.
+        """
+        self._log_event = BroadcastHelper.get_helper(
+            self._mqtt,
+            StartButtonBroadcastEvent,
+        )
+
+    async def main(self) -> None:
+        """Send a trigger event."""
+        await self._log_event.wait_broadcast()
