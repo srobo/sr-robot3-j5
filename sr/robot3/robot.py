@@ -17,6 +17,7 @@ from serial.tools.list_ports_common import ListPortInfo
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
+from .timeout import kill_after_delay
 
 __version__ = "2021.0.0a0.dev0"
 
@@ -221,4 +222,13 @@ class Robot(BaseRobot):
 
         flash_loop = False  # Stop the flashing loop
 
+        # Reload metadata as a metadata USB may have been inserted.
+        # This ensures that the game timeout is observed even if the metadata
+        # USB is inserted after usercode execution begins.
+        self._init_metadata()
+
         LOGGER.info("Start signal received; continuing.")
+
+        if self._metadata.game_timeout is not None:
+            LOGGER.info(f"Game length set to {self._metadata.game_timeout}s")
+            kill_after_delay(self._metadata.game_timeout)
