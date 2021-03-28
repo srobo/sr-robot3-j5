@@ -1,0 +1,14 @@
+# Astoria Config File
+# This file exists to ease development, on production robots it can be found at /etc/astoria.toml
+
+[mqtt]
+host = "::1"
+port = 1883
+enable_tls = false
+force_protocol_version_3_1 = true
+
+topic_prefix = "astoria"
+
+[kit]
+name = "Student Robotics Development"
+version = "0.0.0.0dev"
