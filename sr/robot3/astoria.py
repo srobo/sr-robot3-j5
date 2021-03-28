@@ -99,7 +99,7 @@ class GetMetadataConsumer(StateConsumer):
                 path = gmc._proc_message.disk_info.mount_path
         except ConnectionRefusedError:
             LOGGER.warning("Unable to connect to MQTT broker")
-        except asyncio.exceptions.TimeoutError:
+        except asyncio.TimeoutError:
             LOGGER.warning("Astoria took too long to respond, giving up.")
 
         return GetMetadataResult(metadata, path)
