@@ -4,6 +4,7 @@ import logging
 from pathlib import Path
 from typing import Dict, List, Optional
 
+from astoria.common.messages.astmetad import Metadata, RobotMode
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
 from j5.boards import Board, BoardGroup
@@ -11,8 +12,8 @@ from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from serial.tools.list_ports_common import ListPortInfo
 
+from .astoria import GetMetadataConsumer
 from .env import HARDWARE_ENVIRONMENT
-from .types import RobotMode
 
 __version__ = "2021.0.0a0.dev0"
 
@@ -52,6 +53,8 @@ class Robot(BaseRobot):
         LOGGER.debug("Verbose mode enabled.")
         LOGGER.debug(f"j5 version {j5_version}")
         LOGGER.debug(f"Environment: {self._environment.name}")
+
+        self._init_metadata()
 
         self._init_power_board()
         self._init_auxilliary_boards()
@@ -109,6 +112,10 @@ class Robot(BaseRobot):
             IgnoredRuggeduinoBackend,
         )
 
+    def _init_metadata(self) -> None:
+        """Fetch metadata from Astoria."""
+        self._metadata = GetMetadataConsumer.get_metadata()
+
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
         for board in Board.BOARDS:
@@ -145,9 +152,19 @@ class Robot(BaseRobot):
         return self.servo_boards.singular()
 
     @property
+    def metadata(self) -> Metadata:
+        """Get all metadata."""
+        return self._metadata
+
+    @property
+    def arena(self) -> str:
+        """Determine the arena of the robot."""
+        return self.metadata.arena
+
+    @property
     def mode(self) -> RobotMode:
         """Determine the mode of the robot."""
-        raise NotImplementedError()
+        return self.metadata.mode
 
     @property
     def usbkey(self) -> Path:
@@ -157,7 +174,7 @@ class Robot(BaseRobot):
     @property
     def zone(self) -> int:
         """The arena zone that the robot starts in."""
-        raise NotImplementedError()
+        return self.metadata.zone
 
     def wait_start(self) -> None:
         """
