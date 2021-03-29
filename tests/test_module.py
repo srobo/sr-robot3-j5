@@ -2,12 +2,13 @@
 from enum import Enum
 from typing import Callable, Type
 
-import sr.robot3
+from astoria.common.messages.astmetad import RobotMode
 from j5.boards.sr.v4 import PowerOutputPosition
 from j5.components.gpio_pin import GPIOPinMode
 from j5.components.motor import MotorSpecialState
 from packaging.version import Version
-from sr.robot3.types import RobotMode
+
+import sr.robot3
 
 
 def test_module_version() -> None:

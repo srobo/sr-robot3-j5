@@ -1,26 +1,29 @@
 """sr.robot3 Robot class."""
 
-import json
+import asyncio
 import logging
-from argparse import ArgumentParser
+from datetime import timedelta
 from pathlib import Path
-from stat import S_ISFIFO
-from typing import Any, Dict, List, Optional
+from typing import Dict, List, Optional
 
+from astoria.common.messages.astmetad import Metadata, RobotMode
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
+from j5.components.piezo import Note
 from serial.tools.list_ports_common import ListPortInfo
 
+from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
-from .exceptions import BadFifoException, MetadataErrorException
-from .types import RobotMode
+from .timeout import kill_after_delay
 
 __version__ = "2021.0.0a0.dev0"
 
 LOGGER = logging.getLogger(__name__)
+
+loop = asyncio.get_event_loop()
 
 
 class Robot(BaseRobot):
@@ -47,8 +50,6 @@ class Robot(BaseRobot):
         if verbose:
             LOGGER.setLevel(logging.DEBUG)
 
-        self._parse_arguments()
-
         if ignored_ruggeduinos is None:
             self._ignored_ruggeduino_serials = []
         else:
@@ -59,10 +60,12 @@ class Robot(BaseRobot):
         LOGGER.debug(f"j5 version {j5_version}")
         LOGGER.debug(f"Environment: {self._environment.name}")
 
+        self._init_metadata()
+
         self._init_power_board()
         self._init_auxilliary_boards()
 
-        self._init_ruggeduinos()
+        # self._init_ruggeduinos()
 
         self._log_discovered_boards()
 
@@ -115,6 +118,10 @@ class Robot(BaseRobot):
             IgnoredRuggeduinoBackend,
         )
 
+    def _init_metadata(self) -> None:
+        """Fetch metadata from Astoria."""
+        self._metadata, self._code_path = GetMetadataConsumer.get_metadata()
+
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
         for board in Board.BOARDS:
@@ -122,39 +129,6 @@ class Robot(BaseRobot):
             LOGGER.debug(
                 f"Firmware Version of {board.serial_number}: {board.firmware_version}",
             )
-
-    def _parse_arguments(self) -> None:
-        """Parse arguments to the program."""
-        parser = ArgumentParser(description="Robot Usercode Program")
-        parser.add_argument(
-            "--usbkey",
-            type=Path,
-            help="The path of the (non-volatile) user USB key",
-        )
-        parser.add_argument(
-            "--startfifo",
-            type=Path,
-            help="The named pipe which start info will be received through",
-        )
-        args = parser.parse_args()
-
-        self._usbkey: Optional[Path] = None
-
-        if args.usbkey:
-            if args.usbkey.exists() and args.usbkey.is_dir():
-                self._usbkey = args.usbkey
-                LOGGER.debug(f"USBkey is at {self._usbkey}")
-            else:
-                LOGGER.warn("Invalid usbkey supplied as argument")
-
-        self._startfifo: Optional[Path] = None
-
-        if args.startfifo:
-            if args.startfifo.exists() and S_ISFIFO(args.startfifo.stat().st_mode):
-                self._startfifo = args.startfifo.resolve()
-                LOGGER.debug(f"StartFIFO is at {self._startfifo}")
-            else:
-                LOGGER.warn("Invalid StartFIFO supplied as argument")
 
     @property
     def motor_board(self) -> MotorBoard:
@@ -184,19 +158,29 @@ class Robot(BaseRobot):
         return self.servo_boards.singular()
 
     @property
+    def metadata(self) -> Metadata:
+        """Get all metadata."""
+        return self._metadata
+
+    @property
+    def arena(self) -> str:
+        """Determine the arena of the robot."""
+        return self.metadata.arena
+
+    @property
     def mode(self) -> RobotMode:
         """Determine the mode of the robot."""
-        return self._mode
+        return self.metadata.mode
 
     @property
     def usbkey(self) -> Optional[Path]:
         """The path of the USB code drive."""
-        return self._usbkey
+        return self._code_path
 
     @property
     def zone(self) -> int:
         """The arena zone that the robot starts in."""
-        return self._zone
+        return self.metadata.zone
 
     def wait_start(self) -> None:
         """
@@ -210,29 +194,41 @@ class Robot(BaseRobot):
         """
         LOGGER.info("Waiting for start signal")
 
-        if self._startfifo is None:
-            raise BadFifoException(
-                "No valid startfifo was supplied. Unable to wait for start.",
-            )
-        else:
-            with open(self._startfifo, "r") as fh:
-                raw_data = fh.read()
-            try:
-                data: Any = json.loads(raw_data)
-            except json.decoder.JSONDecodeError as e:
-                raise MetadataErrorException(f"Bad JSON data: {raw_data!r}") from e
+        astoria_start = WaitForStartButtonBroadcastConsumer(self._verbose, None)
+        flash_loop = True
 
-            try:
-                self._mode = RobotMode(data["mode"])
-                self._arena = str(data["arena"])
-                self._zone = int(data["zone"])
-            except TypeError:
-                raise MetadataErrorException(
-                    f"Expected JSON object, received {type(data)}.",
-                ) from None
-            except KeyError:
-                raise MetadataErrorException(
-                    "Missing keys in metadata",
-                )
+        async def wait_for_physical_start() -> None:
+            self.power_board.piezo.buzz(timedelta(seconds=0.1), Note.A6)
+            counter = 0
+            led_state = False
+            while not self.power_board.start_button.is_pressed and flash_loop:
+                if counter % 6 == 0:
+                    led_state = not led_state
+                    self.power_board._run_led.state = led_state
+                await asyncio.sleep(0.05)
+                counter += 1
+            # Turn on the LED now that we are starting
+            self.power_board._run_led.state = True
 
-            LOGGER.info("Start signal received; continuing.")
+        loop.run_until_complete(
+            asyncio.wait(
+                [
+                    astoria_start.run(),
+                    wait_for_physical_start(),
+                ],
+                return_when=asyncio.FIRST_COMPLETED,
+            ),
+        )
+
+        flash_loop = False  # Stop the flashing loop
+
+        # Reload metadata as a metadata USB may have been inserted.
+        # This ensures that the game timeout is observed even if the metadata
+        # USB is inserted after usercode execution begins.
+        self._init_metadata()
+
+        LOGGER.info("Start signal received; continuing.")
+
+        if self._metadata.game_timeout is not None:
+            LOGGER.info(f"Game length set to {self._metadata.game_timeout}s")
+            kill_after_delay(self._metadata.game_timeout)

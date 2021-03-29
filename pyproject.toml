@@ -20,6 +20,8 @@ packages = [
 python = "^3.6"
 j5 = "^0.10.0"
 pyserial = "^3.4"
+astoria = "^0.2.0"
+
 
 [tool.poetry.dev-dependencies]
 flake8 = "*"
