@@ -27,7 +27,7 @@ class GetMetadataResult(NamedTuple):
 class GetMetadataConsumer(StateConsumer):
     """Astoria consumer to fetch metadata."""
 
-    name_prefix = "sr-robot3-metadata"
+    name = "sr-robot3-metadata"
 
     def _setup_logging(self, verbose: bool, *, welcome_message: bool = True) -> None:
         """Use the logging from sr-robot3."""
@@ -110,7 +110,7 @@ class GetMetadataConsumer(StateConsumer):
 class WaitForStartButtonBroadcastConsumer(StateConsumer):
     """Wait for a start button broadcast."""
 
-    name_prefix = "sr-robot3-wait-start"
+    name = "sr-robot3-wait-start"
 
     def _setup_logging(self, verbose: bool, *, welcome_message: bool = True) -> None:
         """Use the logging from sr-robot3."""
