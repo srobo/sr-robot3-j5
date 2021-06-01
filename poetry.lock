@@ -1,6 +1,6 @@
 [[package]]
 name = "astoria"
-version = "0.2.0"
+version = "0.3.0"
 description = "Robot Management System for Student Robotics Kit"
 category = "main"
 optional = false
@@ -573,12 +573,12 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6"
-content-hash = "2a77fbcce5185b5be4c1254a3ed42a17475cb0ecf1b37c1630333ffcfcddefdb"
+content-hash = "f135d781d7cd71b424c47c2c61766a95d72cc2653bd7245bfb59775e0b7fdf1b"
 
 [metadata.files]
 astoria = [
-    {file = "astoria-0.2.0-py3-none-any.whl", hash = "sha256:aebf768757a0854a05f794bff7abfa536d59e3eb224e6ea7a35b4635a43f7c8c"},
-    {file = "astoria-0.2.0.tar.gz", hash = "sha256:f52e755c176510439005d5e4a83fce03f422611691079fd5b58e0b9d985fc913"},
+    {file = "astoria-0.3.0-py3-none-any.whl", hash = "sha256:ab2fbc5317cd354c4d285672e6ef43169d06b4617016b0bb337115b0493f045a"},
+    {file = "astoria-0.3.0.tar.gz", hash = "sha256:397a87fd5664dec59e37daaa4970a887284e30d2b727e7aa8e4f3b24a17aeabd"},
 ]
 atomicwrites = [
     {file = "atomicwrites-1.4.0-py2.py3-none-any.whl", hash = "sha256:6d1784dea7c0c8d4a5172b6c620f40b6e4cbfdf96d783691f2e1302a7b88e197"},
