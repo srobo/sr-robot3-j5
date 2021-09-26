@@ -3,9 +3,17 @@
 CMD:=poetry run
 PYMODULE:=sr/robot3
 TESTS:=tests
+SPHINX_ARGS:=docs/ docs/_build -nWE
 EXTRACODE:=
 
 all: type test lint
+
+docs:
+	$(CMD) sphinx-build $(SPHINX_ARGS)
+
+docs-serve:
+	$(CMD) sphinx-autobuild $(SPHINX_ARGS)
+
 
 lint:
 	$(CMD) flake8 $(PYMODULE) $(TESTS) $(EXTRACODE)

@@ -4,11 +4,12 @@ import asyncio
 import logging
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Type
 
 from astoria.common.messages.astmetad import Metadata, RobotMode
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
+from j5.backends import Backend
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
@@ -43,6 +44,17 @@ class Robot(BaseRobot):
             env: Environment = HARDWARE_ENVIRONMENT,
             ignored_ruggeduinos: Optional[List[str]] = None,
     ) -> None:
+        """
+        Initialise a Robot object.
+
+        :param auto_start: Automatically start the robot ignoring the start
+            button, defaults to False.
+        :param verbose: Turn on verbose logging, defaults to False.
+        :param env: The :class:`j5.backends.environment.Environment` to run the
+            Robot under. See :ref:`Environments` for more information.
+        :param ignored_ruggeduinos: List of Ruggeduino serial numbers to ignore.
+            See :ref:`Custom Ruggeduino Firmware` for more information.
+        """
         self._auto_start = auto_start
         self._verbose = verbose
         self._environment = env
@@ -65,7 +77,7 @@ class Robot(BaseRobot):
         self._init_power_board()
         self._init_auxilliary_boards()
 
-        # self._init_ruggeduinos()
+        self._init_ruggeduinos()
 
         self._log_discovered_boards()
 
@@ -82,15 +94,15 @@ class Robot(BaseRobot):
         The power board is is the only required board.
         """
         self._power_boards = self._environment.get_board_group(PowerBoard)
-        self.power_board: PowerBoard = self._power_boards.singular()
+        self._power_board: PowerBoard = self._power_boards.singular()
 
         # Power on robot, so that we can find other boards.
         self.power_board.outputs.power_on()
 
     def _init_auxilliary_boards(self) -> None:
         """Find and initialise auxilliary boards."""
-        self.motor_boards = self._environment.get_board_group(MotorBoard)
-        self.servo_boards = self._environment.get_board_group(ServoBoard)
+        self._motor_boards = self._environment.get_board_group(MotorBoard)
+        self._servo_boards = self._environment.get_board_group(ServoBoard)
 
     def _init_ruggeduinos(self) -> None:
         """
@@ -100,7 +112,7 @@ class Robot(BaseRobot):
         """
         self.ignored_ruggeduinos: Dict[str, str] = {}
 
-        ruggeduino_backend = self._environment.get_backend(Ruggeduino)
+        ruggeduino_backend: Type[Backend] = self._environment.get_backend(Ruggeduino)
 
         class IgnoredRuggeduinoBackend(ruggeduino_backend):  # type: ignore
             """A backend that ignores some ruggeduinos."""
@@ -113,7 +125,7 @@ class Robot(BaseRobot):
                     return False
                 return super().is_arduino(port)  # type: ignore
 
-        self.ruggeduinos = BoardGroup.get_board_group(
+        self._ruggeduinos = BoardGroup.get_board_group(
             Ruggeduino,
             IgnoredRuggeduinoBackend,
         )
@@ -131,55 +143,122 @@ class Robot(BaseRobot):
             )
 
     @property
+    def motor_boards(self) -> BoardGroup[MotorBoard, Backend]:
+        """
+        Get the group of motor boards.
+
+        :returns: a group of :class:`j5.boards.sr.v4.MotorBoard`.
+        """
+        return self._motor_boards
+
+    @property
     def motor_board(self) -> MotorBoard:
         """
         Get the motor board.
 
-        A CommunicationError is raised if there isn't exactly one attached.
+        :returns: a :class:`j5.boards.sr.v4.MotorBoard`.
+        :raises j5.backends.CommunicationError: there isn't exactly one
+            motor board attached.
         """
-        return self.motor_boards.singular()
+        return self._motor_boards.singular()
+
+    @property
+    def ruggeduinos(self) -> BoardGroup[Ruggeduino, Backend]:
+        """
+        Get the group of ruggeduinos.
+
+        :returns: a group of :class:`j5.boards.sr.v4.Ruggeduino`.
+        """
+        return self._ruggeduinos  # type: ignore
 
     @property
     def ruggeduino(self) -> Ruggeduino:
         """
         Get the ruggeduino.
 
-        A CommunicationError is raised if there isn't exactly one attached.
+        :returns: a :class:`j5.boards.sr.v4.Ruggeduino`.
+        :raises j5.backends.CommunicationError: there isn't exactly one
+            ruggeduino attached.
         """
-        return self.ruggeduinos.singular()
+        return self._ruggeduinos.singular()
+
+    @property
+    def power_board(self) -> PowerBoard:
+        """
+        Get the power board.
+
+        :returns: a :class:`j5.boards.sr.v4.PowerBoard`.
+        :raises j5.backends.CommunicationError: there isn't exactly one
+            power board attached.
+        """
+
+    @property
+    def servo_boards(self) -> BoardGroup[ServoBoard, Backend]:
+        """
+        Get the group of servo boards.
+
+        :returns: a group of :class:`j5.boards.sr.v4.ServoBoard`.
+        """
+        return self._servo_boards
 
     @property
     def servo_board(self) -> ServoBoard:
         """
         Get the servo board.
 
-        A CommunicationError is raised if there isn't exactly one attached.
+        :returns: a :class:`j5.boards.sr.v4.ServoBoard`.
+        :raises j5.backends.CommunicationError: there isn't exactly
+            one servo board attached.
         """
-        return self.servo_boards.singular()
+        return self._servo_boards.singular()
 
     @property
     def metadata(self) -> Metadata:
-        """Get all metadata."""
+        """
+        Get the metadata information object.
+
+        :returns: All available metadata.
+        """
         return self._metadata
 
     @property
     def arena(self) -> str:
-        """Determine the arena of the robot."""
+        """
+        Determine the arena of the robot.
+
+        If the robot is not in a match, this will be ``A``.
+
+        :returns: The arena at the robot is in.
+        """
         return self.metadata.arena
 
     @property
     def mode(self) -> RobotMode:
-        """Determine the mode of the robot."""
+        """
+        Determine the mode of the robot.
+
+        See :ref:`Robot Modes` for available modes.
+
+        :returns: current mode of the robot.
+        """
         return self.metadata.mode
 
     @property
     def usbkey(self) -> Optional[Path]:
-        """The path of the USB code drive."""
+        """
+        The path of the USB code drive.
+
+        :returns: path to the mountpoint of the USB code drive.
+        """
         return self._code_path
 
     @property
     def zone(self) -> int:
-        """The arena zone that the robot starts in."""
+        """
+        The arena zone that the robot starts in.
+
+        :returns: arena zone that the robot starts in.
+        """
         return self.metadata.zone
 
     def wait_start(self) -> None:
@@ -189,8 +268,6 @@ class Robot(BaseRobot):
         Intended for use with `Robot(auto_start=False)`, to allow
         students to run code and setup their robot before the start
         of a match.
-
-        Currently implemented to be compatible with herdsman.
         """
         LOGGER.info("Waiting for start signal")
 
