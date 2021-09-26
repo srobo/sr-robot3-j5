@@ -18,9 +18,9 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.6"
-j5 = "^0.11.0"
+j5 = "^0.13.0"
 pyserial = "^3.4"
-astoria = "^0.3.0"
+astoria = "^0.4.0"
 
 
 [tool.poetry.dev-dependencies]
