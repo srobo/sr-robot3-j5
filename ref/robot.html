@@ -91,7 +91,7 @@ of this class on a given machine.</p>
 <li><p><strong>auto_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Automatically start the robot ignoring the start
 button, defaults to False.</p></li>
 <li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Turn on verbose logging, defaults to False.</p></li>
-<li><p><strong>env</strong> (<a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.environment.html#j5.backends.environment.Environment" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a>) – The <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.environment.html#j5.backends.environment.Environment" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.backends.environment.Environment</span></code></a> to run the
+<li><p><strong>env</strong> (<a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.environment.html#j5.backends.environment.Environment" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a>) – The <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.environment.html#j5.backends.environment.Environment" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.backends.environment.Environment</span></code></a> to run the
 Robot under. See <a class="reference internal" href="../advanced.html#environments"><span class="std std-ref">Environments</span></a> for more information.</p></li>
 <li><p><strong>ignored_ruggeduinos</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – List of Ruggeduino serial numbers to ignore.
 See <a class="reference internal" href="../advanced.html#custom-ruggeduino-firmware"><span class="std std-ref">Custom Ruggeduino Firmware</span></a> for more information.</p></li>
@@ -146,17 +146,17 @@ See <a class="reference internal" href="../advanced.html#custom-ruggeduino-firmw
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.motor_board">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">motor_board</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.12.0)"><span class="pre">j5.boards.sr.v4.motor_board.MotorBoard</span></a></em><a class="headerlink" href="#sr.robot3.Robot.motor_board" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">motor_board</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.13.0)"><span class="pre">j5.boards.sr.v4.motor_board.MotorBoard</span></a></em><a class="headerlink" href="#sr.robot3.Robot.motor_board" title="Permalink to this definition"></a></dt>
 <dd><p>Get the motor board.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MotorBoard</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MotorBoard</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.MotorBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.MotorBoard</span></code></a>.</p>
+<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.MotorBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.MotorBoard</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.12.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly one
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.13.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly one
 motor board attached.</p>
 </dd>
 </dl>
@@ -164,31 +164,31 @@ motor board attached.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.motor_boards">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">motor_boards</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.12.0)"><span class="pre">j5.boards.board_group.BoardGroup</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.12.0)"><span class="pre">j5.boards.sr.v4.motor_board.MotorBoard</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.12.0)"><span class="pre">j5.backends.backend.Backend</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.motor_boards" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">motor_boards</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.13.0)"><span class="pre">j5.boards.board_group.BoardGroup</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.13.0)"><span class="pre">j5.boards.sr.v4.motor_board.MotorBoard</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.13.0)"><span class="pre">j5.backends.backend.Backend</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.motor_boards" title="Permalink to this definition"></a></dt>
 <dd><p>Get the group of motor boards.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoardGroup</span></code></a>[<a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MotorBoard</span></code></a>, <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoardGroup</span></code></a>[<a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.motor_board.html#j5.boards.sr.v4.motor_board.MotorBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">MotorBoard</span></code></a>, <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a group of <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.MotorBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.MotorBoard</span></code></a>.</p>
+<dd class="field-even"><p>a group of <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.MotorBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.MotorBoard</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.power_board">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">power_board</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.power_board.html#j5.boards.sr.v4.power_board.PowerBoard" title="(in j5 v0.12.0)"><span class="pre">j5.boards.sr.v4.power_board.PowerBoard</span></a></em><a class="headerlink" href="#sr.robot3.Robot.power_board" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">power_board</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.power_board.html#j5.boards.sr.v4.power_board.PowerBoard" title="(in j5 v0.13.0)"><span class="pre">j5.boards.sr.v4.power_board.PowerBoard</span></a></em><a class="headerlink" href="#sr.robot3.Robot.power_board" title="Permalink to this definition"></a></dt>
 <dd><p>Get the power board.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.power_board.html#j5.boards.sr.v4.power_board.PowerBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PowerBoard</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.power_board.html#j5.boards.sr.v4.power_board.PowerBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">PowerBoard</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.PowerBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.PowerBoard</span></code></a>.</p>
+<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.PowerBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.PowerBoard</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.12.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly one
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.13.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly one
 power board attached.</p>
 </dd>
 </dl>
@@ -196,17 +196,17 @@ power board attached.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.ruggeduino">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ruggeduino</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.12.0)"><span class="pre">j5.boards.sr.v4.ruggeduino.Ruggeduino</span></a></em><a class="headerlink" href="#sr.robot3.Robot.ruggeduino" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ruggeduino</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.13.0)"><span class="pre">j5.boards.sr.v4.ruggeduino.Ruggeduino</span></a></em><a class="headerlink" href="#sr.robot3.Robot.ruggeduino" title="Permalink to this definition"></a></dt>
 <dd><p>Get the ruggeduino.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ruggeduino</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ruggeduino</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.Ruggeduino" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.Ruggeduino</span></code></a>.</p>
+<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.Ruggeduino" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.Ruggeduino</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.12.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly one
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.13.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly one
 ruggeduino attached.</p>
 </dd>
 </dl>
@@ -214,31 +214,31 @@ ruggeduino attached.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.ruggeduinos">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ruggeduinos</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.12.0)"><span class="pre">j5.boards.board_group.BoardGroup</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.12.0)"><span class="pre">j5.boards.sr.v4.ruggeduino.Ruggeduino</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.12.0)"><span class="pre">j5.backends.backend.Backend</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.ruggeduinos" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">ruggeduinos</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.13.0)"><span class="pre">j5.boards.board_group.BoardGroup</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.13.0)"><span class="pre">j5.boards.sr.v4.ruggeduino.Ruggeduino</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.13.0)"><span class="pre">j5.backends.backend.Backend</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.ruggeduinos" title="Permalink to this definition"></a></dt>
 <dd><p>Get the group of ruggeduinos.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoardGroup</span></code></a>[<a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ruggeduino</span></code></a>, <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoardGroup</span></code></a>[<a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.ruggeduino.html#j5.boards.sr.v4.ruggeduino.Ruggeduino" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ruggeduino</span></code></a>, <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a group of <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.Ruggeduino" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.Ruggeduino</span></code></a>.</p>
+<dd class="field-even"><p>a group of <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.Ruggeduino" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.Ruggeduino</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.servo_board">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">servo_board</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.12.0)"><span class="pre">j5.boards.sr.v4.servo_board.ServoBoard</span></a></em><a class="headerlink" href="#sr.robot3.Robot.servo_board" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">servo_board</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.13.0)"><span class="pre">j5.boards.sr.v4.servo_board.ServoBoard</span></a></em><a class="headerlink" href="#sr.robot3.Robot.servo_board" title="Permalink to this definition"></a></dt>
 <dd><p>Get the servo board.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServoBoard</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServoBoard</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.ServoBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.ServoBoard</span></code></a>.</p>
+<dd class="field-even"><p>a <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.ServoBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.ServoBoard</span></code></a>.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.12.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.html#j5.backends.CommunicationError" title="(in j5 v0.13.0)"><strong>j5.backends.CommunicationError</strong></a> – there isn’t exactly
 one servo board attached.</p>
 </dd>
 </dl>
@@ -246,14 +246,14 @@ one servo board attached.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.servo_boards">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">servo_boards</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.12.0)"><span class="pre">j5.boards.board_group.BoardGroup</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.12.0)"><span class="pre">j5.boards.sr.v4.servo_board.ServoBoard</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.12.0)"><span class="pre">j5.backends.backend.Backend</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.servo_boards" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">servo_boards</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.13.0)"><span class="pre">j5.boards.board_group.BoardGroup</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.13.0)"><span class="pre">j5.boards.sr.v4.servo_board.ServoBoard</span></a><span class="p"><span class="pre">,</span> </span><a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.13.0)"><span class="pre">j5.backends.backend.Backend</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.servo_boards" title="Permalink to this definition"></a></dt>
 <dd><p>Get the group of servo boards.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoardGroup</span></code></a>[<a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServoBoard</span></code></a>, <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.board_group.html#j5.boards.board_group.BoardGroup" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">BoardGroup</span></code></a>[<a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.servo_board.html#j5.boards.sr.v4.servo_board.ServoBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">ServoBoard</span></code></a>, <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.backend.html#j5.backends.backend.Backend" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Backend</span></code></a>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a group of <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.ServoBoard" title="(in j5 v0.12.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.ServoBoard</span></code></a>.</p>
+<dd class="field-even"><p>a group of <a class="reference external" href="https://j5.org.uk/en/main/api/j5.boards.sr.v4.html#j5.boards.sr.v4.ServoBoard" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.boards.sr.v4.ServoBoard</span></code></a>.</p>
 </dd>
 </dl>
 </dd></dl>
