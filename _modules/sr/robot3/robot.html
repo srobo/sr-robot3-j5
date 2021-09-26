@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sr.robot3.robot &mdash; Student Robotics API 2021.0.0a1.dev1 documentation</title>
+      <link rel="stylesheet" href="../../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="../../../_static/graphviz.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js"></script>
+        <script src="../../../_static/jquery.js"></script>
+        <script src="../../../_static/underscore.js"></script>
+        <script src="../../../_static/doctools.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../../index.html" class="icon icon-home"> Student Robotics API
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../../advanced.html">Advanced Usage</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../ref/index.html">API Reference</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">Student Robotics API</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../../index.html">Module code</a> &raquo;</li>
+      <li>sr.robot3.robot</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for sr.robot3.robot</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;sr.robot3 Robot class.&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">asyncio</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">timedelta</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Dict</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Type</span>
+
+<span class="kn">from</span> <span class="nn">astoria.common.messages.astmetad</span> <span class="kn">import</span> <span class="n">Metadata</span><span class="p">,</span> <span class="n">RobotMode</span>
+<span class="kn">from</span> <span class="nn">j5</span> <span class="kn">import</span> <span class="n">BaseRobot</span><span class="p">,</span> <span class="n">Environment</span>
+<span class="kn">from</span> <span class="nn">j5</span> <span class="kn">import</span> <span class="n">__version__</span> <span class="k">as</span> <span class="n">j5_version</span>
+<span class="kn">from</span> <span class="nn">j5.backends</span> <span class="kn">import</span> <span class="n">Backend</span>
+<span class="kn">from</span> <span class="nn">j5.boards</span> <span class="kn">import</span> <span class="n">Board</span><span class="p">,</span> <span class="n">BoardGroup</span>
+<span class="kn">from</span> <span class="nn">j5.boards.sr.v4</span> <span class="kn">import</span> <span class="n">MotorBoard</span><span class="p">,</span> <span class="n">PowerBoard</span><span class="p">,</span> <span class="n">ServoBoard</span>
+<span class="kn">from</span> <span class="nn">j5.boards.sr.v4.ruggeduino</span> <span class="kn">import</span> <span class="n">Ruggeduino</span>
+<span class="kn">from</span> <span class="nn">j5.components.piezo</span> <span class="kn">import</span> <span class="n">Note</span>
+<span class="kn">from</span> <span class="nn">serial.tools.list_ports_common</span> <span class="kn">import</span> <span class="n">ListPortInfo</span>
+
+<span class="kn">from</span> <span class="nn">.astoria</span> <span class="kn">import</span> <span class="n">GetMetadataConsumer</span><span class="p">,</span> <span class="n">WaitForStartButtonBroadcastConsumer</span>
+<span class="kn">from</span> <span class="nn">.env</span> <span class="kn">import</span> <span class="n">HARDWARE_ENVIRONMENT</span>
+<span class="kn">from</span> <span class="nn">.timeout</span> <span class="kn">import</span> <span class="n">kill_after_delay</span>
+
+<span class="n">__version__</span> <span class="o">=</span> <span class="s2">&quot;2021.0.0a1.dev1&quot;</span>
+
+<span class="n">LOGGER</span> <span class="o">=</span> <span class="n">logging</span><span class="o">.</span><span class="n">getLogger</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="n">loop</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">get_event_loop</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="Robot"><a class="viewcode-back" href="../../../ref/robot.html#sr.robot3.Robot">[docs]</a><span class="k">class</span> <span class="nc">Robot</span><span class="p">(</span><span class="n">BaseRobot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Student Robotics robot.</span>
+
+<span class="sd">    Inherits from j5 BaseRobot to ensure that all boards are made safe</span>
+<span class="sd">    in the event of a crash, and to ensure that there is only one instance</span>
+<span class="sd">    of this class on a given machine.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+<div class="viewcode-block" id="Robot.__init__"><a class="viewcode-back" href="../../../ref/robot.html#sr.robot3.Robot.__init__">[docs]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">,</span>
+            <span class="o">*</span><span class="p">,</span>
+            <span class="n">auto_start</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+            <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+            <span class="n">env</span><span class="p">:</span> <span class="n">Environment</span> <span class="o">=</span> <span class="n">HARDWARE_ENVIRONMENT</span><span class="p">,</span>
+            <span class="n">ignored_ruggeduinos</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise a Robot object.</span>
+
+<span class="sd">        :param auto_start: Automatically start the robot ignoring the start</span>
+<span class="sd">            button, defaults to False.</span>
+<span class="sd">        :param verbose: Turn on verbose logging, defaults to False.</span>
+<span class="sd">        :param env: The :class:`j5.backends.environment.Environment` to run the</span>
+<span class="sd">            Robot under. See :ref:`Environments` for more information.</span>
+<span class="sd">        :param ignored_ruggeduinos: List of Ruggeduino serial numbers to ignore.</span>
+<span class="sd">            See :ref:`Custom Ruggeduino Firmware` for more information.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_auto_start</span> <span class="o">=</span> <span class="n">auto_start</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span> <span class="o">=</span> <span class="n">env</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">setLevel</span><span class="p">(</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">ignored_ruggeduinos</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ignored_ruggeduino_serials</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_ignored_ruggeduino_serials</span> <span class="o">=</span> <span class="n">ignored_ruggeduinos</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;sr.robot3 version </span><span class="si">{</span><span class="n">__version__</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Verbose mode enabled.&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;j5 version </span><span class="si">{</span><span class="n">j5_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Environment: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_metadata</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_power_board</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_auxilliary_boards</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_ruggeduinos</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_log_discovered_boards</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">auto_start</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Auto start is enabled.&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wait_start</span><span class="p">()</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s2">&quot;Auto start is disabled.&quot;</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">_init_power_board</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Find and initialise the power board.</span>
+
+<span class="sd">        The power board is is the only required board.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_power_boards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">get_board_group</span><span class="p">(</span><span class="n">PowerBoard</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_power_board</span><span class="p">:</span> <span class="n">PowerBoard</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_power_boards</span><span class="o">.</span><span class="n">singular</span><span class="p">()</span>
+
+        <span class="c1"># Power on robot, so that we can find other boards.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">outputs</span><span class="o">.</span><span class="n">power_on</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_init_auxilliary_boards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Find and initialise auxilliary boards.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_motor_boards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">get_board_group</span><span class="p">(</span><span class="n">MotorBoard</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_servo_boards</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">get_board_group</span><span class="p">(</span><span class="n">ServoBoard</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_ruggeduinos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Initialise the ruggeduinos.</span>
+
+<span class="sd">        Ignore any that the user has specified.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ignored_ruggeduinos</span><span class="p">:</span> <span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+
+        <span class="n">ruggeduino_backend</span><span class="p">:</span> <span class="n">Type</span><span class="p">[</span><span class="n">Backend</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_environment</span><span class="o">.</span><span class="n">get_backend</span><span class="p">(</span><span class="n">Ruggeduino</span><span class="p">)</span>
+
+        <span class="k">class</span> <span class="nc">IgnoredRuggeduinoBackend</span><span class="p">(</span><span class="n">ruggeduino_backend</span><span class="p">):</span>  <span class="c1"># type: ignore</span>
+            <span class="sd">&quot;&quot;&quot;A backend that ignores some ruggeduinos.&quot;&quot;&quot;</span>
+
+            <span class="nd">@classmethod</span>
+            <span class="k">def</span> <span class="nf">is_arduino</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">port</span><span class="p">:</span> <span class="n">ListPortInfo</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">bool</span><span class="p">:</span>
+                <span class="sd">&quot;&quot;&quot;Check if a ListPortInfo represents a valid Arduino derivative.&quot;&quot;&quot;</span>
+                <span class="k">if</span> <span class="n">port</span><span class="o">.</span><span class="n">serial_number</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ignored_ruggeduino_serials</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">ignored_ruggeduinos</span><span class="p">[</span><span class="n">port</span><span class="o">.</span><span class="n">serial_number</span><span class="p">]</span> <span class="o">=</span> <span class="n">port</span><span class="o">.</span><span class="n">device</span>
+                    <span class="k">return</span> <span class="kc">False</span>
+                <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">is_arduino</span><span class="p">(</span><span class="n">port</span><span class="p">)</span>  <span class="c1"># type: ignore</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_ruggeduinos</span> <span class="o">=</span> <span class="n">BoardGroup</span><span class="o">.</span><span class="n">get_board_group</span><span class="p">(</span>
+            <span class="n">Ruggeduino</span><span class="p">,</span>
+            <span class="n">IgnoredRuggeduinoBackend</span><span class="p">,</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_init_metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Fetch metadata from Astoria.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_path</span> <span class="o">=</span> <span class="n">GetMetadataConsumer</span><span class="o">.</span><span class="n">get_metadata</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">_log_discovered_boards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Log all boards that we have discovered.&quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">board</span> <span class="ow">in</span> <span class="n">Board</span><span class="o">.</span><span class="n">BOARDS</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Found </span><span class="si">{</span><span class="n">board</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s2"> - </span><span class="si">{</span><span class="n">board</span><span class="o">.</span><span class="n">serial_number</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Firmware Version of </span><span class="si">{</span><span class="n">board</span><span class="o">.</span><span class="n">serial_number</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">board</span><span class="o">.</span><span class="n">firmware_version</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">motor_boards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoardGroup</span><span class="p">[</span><span class="n">MotorBoard</span><span class="p">,</span> <span class="n">Backend</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the group of motor boards.</span>
+
+<span class="sd">        :returns: a group of :class:`j5.boards.sr.v4.MotorBoard`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_motor_boards</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">motor_board</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MotorBoard</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the motor board.</span>
+
+<span class="sd">        :returns: a :class:`j5.boards.sr.v4.MotorBoard`.</span>
+<span class="sd">        :raises j5.backends.CommunicationError: there isn&#39;t exactly one</span>
+<span class="sd">            motor board attached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_motor_boards</span><span class="o">.</span><span class="n">singular</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ruggeduinos</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoardGroup</span><span class="p">[</span><span class="n">Ruggeduino</span><span class="p">,</span> <span class="n">Backend</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the group of ruggeduinos.</span>
+
+<span class="sd">        :returns: a group of :class:`j5.boards.sr.v4.Ruggeduino`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ruggeduinos</span>  <span class="c1"># type: ignore</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">ruggeduino</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Ruggeduino</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the ruggeduino.</span>
+
+<span class="sd">        :returns: a :class:`j5.boards.sr.v4.Ruggeduino`.</span>
+<span class="sd">        :raises j5.backends.CommunicationError: there isn&#39;t exactly one</span>
+<span class="sd">            ruggeduino attached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_ruggeduinos</span><span class="o">.</span><span class="n">singular</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">power_board</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">PowerBoard</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the power board.</span>
+
+<span class="sd">        :returns: a :class:`j5.boards.sr.v4.PowerBoard`.</span>
+<span class="sd">        :raises j5.backends.CommunicationError: there isn&#39;t exactly one</span>
+<span class="sd">            power board attached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">servo_boards</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">BoardGroup</span><span class="p">[</span><span class="n">ServoBoard</span><span class="p">,</span> <span class="n">Backend</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the group of servo boards.</span>
+
+<span class="sd">        :returns: a group of :class:`j5.boards.sr.v4.ServoBoard`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servo_boards</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">servo_board</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ServoBoard</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the servo board.</span>
+
+<span class="sd">        :returns: a :class:`j5.boards.sr.v4.ServoBoard`.</span>
+<span class="sd">        :raises j5.backends.CommunicationError: there isn&#39;t exactly</span>
+<span class="sd">            one servo board attached.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_servo_boards</span><span class="o">.</span><span class="n">singular</span><span class="p">()</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">metadata</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Metadata</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Get the metadata information object.</span>
+
+<span class="sd">        :returns: All available metadata.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">arena</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the arena of the robot.</span>
+
+<span class="sd">        If the robot is not in a match, this will be ``A``.</span>
+
+<span class="sd">        :returns: The arena at the robot is in.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">arena</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">mode</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">RobotMode</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Determine the mode of the robot.</span>
+
+<span class="sd">        See :ref:`Robot Modes` for available modes.</span>
+
+<span class="sd">        :returns: current mode of the robot.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">mode</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">usbkey</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Optional</span><span class="p">[</span><span class="n">Path</span><span class="p">]:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The path of the USB code drive.</span>
+
+<span class="sd">        :returns: path to the mountpoint of the USB code drive.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_code_path</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">zone</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        The arena zone that the robot starts in.</span>
+
+<span class="sd">        :returns: arena zone that the robot starts in.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">metadata</span><span class="o">.</span><span class="n">zone</span>
+
+<div class="viewcode-block" id="Robot.wait_start"><a class="viewcode-back" href="../../../ref/robot.html#sr.robot3.Robot.wait_start">[docs]</a>    <span class="k">def</span> <span class="nf">wait_start</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Wait for a start signal.</span>
+
+<span class="sd">        Intended for use with `Robot(auto_start=False)`, to allow</span>
+<span class="sd">        students to run code and setup their robot before the start</span>
+<span class="sd">        of a match.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Waiting for start signal&quot;</span><span class="p">)</span>
+
+        <span class="n">astoria_start</span> <span class="o">=</span> <span class="n">WaitForStartButtonBroadcastConsumer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="n">flash_loop</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_physical_start</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">piezo</span><span class="o">.</span><span class="n">buzz</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">Note</span><span class="o">.</span><span class="n">A6</span><span class="p">)</span>
+            <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">led_state</span> <span class="o">=</span> <span class="kc">False</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">is_pressed</span> <span class="ow">and</span> <span class="n">flash_loop</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="mi">6</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">led_state</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">led_state</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">_run_led</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">led_state</span>
+                <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+                <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="c1"># Turn on the LED now that we are starting</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">_run_led</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">True</span>
+
+        <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="n">astoria_start</span><span class="o">.</span><span class="n">run</span><span class="p">(),</span>
+                    <span class="n">wait_for_physical_start</span><span class="p">(),</span>
+                <span class="p">],</span>
+                <span class="n">return_when</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">FIRST_COMPLETED</span><span class="p">,</span>
+            <span class="p">),</span>
+        <span class="p">)</span>
+
+        <span class="n">flash_loop</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Stop the flashing loop</span>
+
+        <span class="c1"># Reload metadata as a metadata USB may have been inserted.</span>
+        <span class="c1"># This ensures that the game timeout is observed even if the metadata</span>
+        <span class="c1"># USB is inserted after usercode execution begins.</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_init_metadata</span><span class="p">()</span>
+
+        <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Start signal received; continuing.&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="o">.</span><span class="n">game_timeout</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Game length set to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="o">.</span><span class="n">game_timeout</span><span class="si">}</span><span class="s2">s&quot;</span><span class="p">)</span>
+            <span class="n">kill_after_delay</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_metadata</span><span class="o">.</span><span class="n">game_timeout</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Student Robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
