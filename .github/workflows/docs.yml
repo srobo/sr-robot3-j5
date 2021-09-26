@@ -1,0 +1,43 @@
+name: Build and Publish docs
+
+on:
+  push:
+    branches:
+      - "main"
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+        python: [3.8]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install GraphViz
+        run: sudo apt install graphviz
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Use in-project virtualenv
+        run: poetry config virtualenvs.in-project true
+      - uses: actions/cache@v2
+        with:
+          path: .venv/
+          key: ${{ runner.os }}-${{ matrix.python }}-pip-${{ hashFiles('poetry.lock') }}-${{ hashFiles('pyproject.toml') }}
+      - name: Install dependencies
+        run: poetry install
+  
+      - name: Build docs
+        run: make docs
+        
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@3.7.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: docs/_build # The folder the action should deploy.
+          CLEAN: true # Automatically remove deleted files from the deploy branch
