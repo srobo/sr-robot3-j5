@@ -1,4 +1,4 @@
-.PHONY: all clean lint type test test-cov
+.PHONY: all clean docs lint type test test-cov
 
 CMD:=poetry run
 PYMODULE:=sr/robot3
