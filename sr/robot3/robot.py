@@ -92,6 +92,7 @@ class Robot(BaseRobot):
     def _init_cameras(self) -> None:
         """Initialise vision system for a single camera"""
         self._cameras = self._environment.get_board_group(ZolotoCameraBoard)
+        self._camera: ZolotoCameraBoard = self._cameras.singular()
 
     def _init_power_board(self) -> None:
         """
@@ -155,7 +156,7 @@ class Robot(BaseRobot):
 
         :returns: a :class:`j5_zoloto.board.ZolotoCameraBoard`.
         """
-        return self._cameras.singular()
+        return self._camera
 
     @property
     def motor_boards(self) -> BoardGroup[MotorBoard, Backend]:
