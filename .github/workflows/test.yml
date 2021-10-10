@@ -25,6 +25,8 @@ jobs:
         run: pip install poetry
       - name: Use in-project virtualenv
         run: poetry config virtualenvs.in-project true
+      - name: Use system site-packages
+        run: poetry config virtualenvs.options.system-site-packages true
       - uses: actions/cache@v2
         with:
           path: .venv/
