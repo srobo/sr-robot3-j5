@@ -4,16 +4,17 @@ import asyncio
 import logging
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type, Union, Any
 
 from astoria.common.messages.astmetad import Metadata, RobotMode
-from j5 import BaseRobot, Environment
+from j5 import BaseRobot, Environment, BoardGroup
 from j5 import __version__ as j5_version
 from j5.backends import Backend
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from j5.components.piezo import Note
+from j5_zoloto import ZolotoCameraBoard, ZolotoSingleHardwareBackend
 from serial.tools.list_ports_common import ListPortInfo
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
@@ -74,6 +75,7 @@ class Robot(BaseRobot):
 
         self._init_metadata()
 
+        self._init_cameras()
         self._init_power_board()
         self._init_auxilliary_boards()
 
@@ -86,6 +88,10 @@ class Robot(BaseRobot):
         else:
             LOGGER.debug("Auto start is disabled.")
             self.wait_start()
+
+    def _init_cameras(self) -> None:
+        """Initialise vision system for a single camera"""
+        self._cameras = self._environment.get_board_group(ZolotoCameraBoard)
 
     def _init_power_board(self) -> None:
         """
@@ -141,6 +147,15 @@ class Robot(BaseRobot):
             LOGGER.debug(
                 f"Firmware Version of {board.serial_number}: {board.firmware_version}",
             )
+
+    @property
+    def camera(self) -> ZolotoCameraBoard:
+        """
+        Get the robot's camera interface.
+
+        :returns: a :class:`j5_zoloto.board.ZolotoCameraBoard`.
+        """
+        return self._cameras.singular()
 
     @property
     def motor_boards(self) -> BoardGroup[MotorBoard, Backend]:
