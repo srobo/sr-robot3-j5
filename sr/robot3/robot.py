@@ -191,6 +191,7 @@ class Robot(BaseRobot):
         :raises j5.backends.CommunicationError: there isn't exactly one
             power board attached.
         """
+        return self._power_board
 
     @property
     def servo_boards(self) -> BoardGroup[ServoBoard, Backend]:
