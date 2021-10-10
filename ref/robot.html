@@ -4,7 +4,7 @@
   <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Robot &mdash; Student Robotics API 2021.0.0a1.dev1 documentation</title>
+  <title>Robot &mdash; Student Robotics API 2022.0.0a1 documentation</title>
       <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
       <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
       <link rel="stylesheet" href="../_static/graphviz.css" type="text/css" />
@@ -88,12 +88,12 @@ of this class on a given machine.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>auto_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Automatically start the robot ignoring the start
+<li><p><strong>auto_start</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Automatically start the robot ignoring the start
 button, defaults to False.</p></li>
-<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Turn on verbose logging, defaults to False.</p></li>
+<li><p><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></a>) – Turn on verbose logging, defaults to False.</p></li>
 <li><p><strong>env</strong> (<a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.environment.html#j5.backends.environment.Environment" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Environment</span></code></a>) – The <a class="reference external" href="https://j5.org.uk/en/main/api/j5.backends.environment.html#j5.backends.environment.Environment" title="(in j5 v0.13.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">j5.backends.environment.Environment</span></code></a> to run the
 Robot under. See <a class="reference internal" href="../advanced.html#environments"><span class="std std-ref">Environments</span></a> for more information.</p></li>
-<li><p><strong>ignored_ruggeduinos</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – List of Ruggeduino serial numbers to ignore.
+<li><p><strong>ignored_ruggeduinos</strong> (<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.List" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>]]) – List of Ruggeduino serial numbers to ignore.
 See <a class="reference internal" href="../advanced.html#custom-ruggeduino-firmware"><span class="std std-ref">Custom Ruggeduino Firmware</span></a> for more information.</p></li>
 </ul>
 </dd>
@@ -102,12 +102,12 @@ See <a class="reference internal" href="../advanced.html#custom-ruggeduino-firmw
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.arena">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">arena</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><span class="pre">str</span></a></em><a class="headerlink" href="#sr.robot3.Robot.arena" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">arena</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><span class="pre">str</span></a></em><a class="headerlink" href="#sr.robot3.Robot.arena" title="Permalink to this definition"></a></dt>
 <dd><p>Determine the arena of the robot.</p>
 <p>If the robot is not in a match, this will be <code class="docutils literal notranslate"><span class="pre">A</span></code>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>The arena at the robot is in.</p>
@@ -260,11 +260,11 @@ one servo board attached.</p>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.usbkey">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">usbkey</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.usbkey" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">usbkey</span></span><em class="property"><span class="pre">:</span> <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><span class="pre">pathlib.Path</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#sr.robot3.Robot.usbkey" title="Permalink to this definition"></a></dt>
 <dd><p>The path of the USB code drive.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.9)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>]</p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.Optional" title="(in Python v3.10)"><code class="xref py py-data docutils literal notranslate"><span class="pre">Optional</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Path</span></code></a>]</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>path to the mountpoint of the USB code drive.</p>
@@ -281,18 +281,18 @@ students to run code and setup their robot before the start
 of a match.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.9)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.10)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">None</span></code></a></p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py property">
 <dt class="sig sig-object py" id="sr.robot3.Robot.zone">
-<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">zone</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><span class="pre">int</span></a></em><a class="headerlink" href="#sr.robot3.Robot.zone" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">property</span> </em><span class="sig-name descname"><span class="pre">zone</span></span><em class="property"><span class="pre">:</span> <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><span class="pre">int</span></a></em><a class="headerlink" href="#sr.robot3.Robot.zone" title="Permalink to this definition"></a></dt>
 <dd><p>The arena zone that the robot starts in.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.9)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.10)"><code class="xref py py-class docutils literal notranslate"><span class="pre">int</span></code></a></p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>arena zone that the robot starts in.</p>
