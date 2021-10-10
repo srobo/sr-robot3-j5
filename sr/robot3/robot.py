@@ -20,7 +20,7 @@ from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
 
-__version__ = "2021.0.0a1.dev1"
+__version__ = "2022.0.0a1"
 
 LOGGER = logging.getLogger(__name__)
 
