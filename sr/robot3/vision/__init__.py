@@ -1,3 +1,5 @@
+"""Vision API."""
+
 from .backend import SRZolotoSingleHardwareBackend
 
 __all__ = [

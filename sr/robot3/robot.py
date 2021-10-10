@@ -4,17 +4,17 @@ import asyncio
 import logging
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Type, Union, Any
+from typing import Dict, List, Optional, Type
 
 from astoria.common.messages.astmetad import Metadata, RobotMode
-from j5 import BaseRobot, Environment, BoardGroup
+from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
 from j5.backends import Backend
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from j5.components.piezo import Note
-from j5_zoloto import ZolotoCameraBoard, ZolotoSingleHardwareBackend
+from j5_zoloto import ZolotoCameraBoard
 from serial.tools.list_ports_common import ListPortInfo
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
@@ -90,7 +90,7 @@ class Robot(BaseRobot):
             self.wait_start()
 
     def _init_cameras(self) -> None:
-        """Initialise vision system for a single camera"""
+        """Initialise vision system for a single camera."""
         self._cameras = self._environment.get_board_group(ZolotoCameraBoard)
         self._camera: ZolotoCameraBoard = self._cameras.singular()
 

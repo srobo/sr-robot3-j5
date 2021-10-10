@@ -1,3 +1,11 @@
+"""
+SR custom behaviour for Zoloto.
+
+- Overriding the camera so that only the markers we want are captured
+- Map the development and competition markers into the correct ranges
+- Determine the size of a marker given the ID
+- Determine which OpenCV calibration to use for the currently connected camera.
+"""
 import importlib.resources
 import logging
 from pathlib import Path
@@ -5,7 +13,12 @@ from typing import List
 
 from j5_zoloto import ZolotoSingleHardwareBackend
 
-from .strategy import CalibrationStrategy, MacSystemStrategy, StaticStrategy, USBDevicePresentStrategy
+from .strategy import (
+    CalibrationStrategy,
+    MacSystemStrategy,
+    StaticStrategy,
+    USBDevicePresentStrategy,
+)
 
 LOGGER = logging.getLogger(__name__)
 
@@ -29,7 +42,9 @@ class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
             filename = strategy.get_calibration_name()
             if filename is not None:
                 LOGGER.info(f"Using {filename} for webcam calibration")
-                with importlib.resources.path("sr.robot3.vision.calibrations", f"{filename}.xml") as path:
+                with importlib.resources.path(
+                        "sr.robot3.vision.calibrations",
+                        f"{filename}.xml") as path:
                     return path
 
         # Should not be reachable as the static strategy will always match

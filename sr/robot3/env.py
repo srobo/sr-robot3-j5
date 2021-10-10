@@ -19,8 +19,6 @@ __all__ = [
     "CONSOLE_ENVIRONMENT",
 ]
 
-from j5_zoloto import ZolotoSingleHardwareBackend
-
 from sr.robot3.vision import SRZolotoSingleHardwareBackend
 
 HARDWARE_ENVIRONMENT = Environment("Hardware Environment")
@@ -45,4 +43,3 @@ VISION_ONLY_ENVIRONMENT.register_backend(SRV4ServoBoardConsoleBackend)
 VISION_ONLY_ENVIRONMENT.register_backend(SRV4MotorBoardConsoleBackend)
 VISION_ONLY_ENVIRONMENT.register_backend(SRV4RuggeduinoConsoleBackend)
 VISION_ONLY_ENVIRONMENT.register_backend(SRZolotoSingleHardwareBackend)
-
