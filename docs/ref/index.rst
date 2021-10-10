@@ -6,3 +6,7 @@ API Reference
    :caption: Contents:
 
    robot
+   power
+   motors
+   servos
+   ruggeduino

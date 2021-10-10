@@ -4,7 +4,7 @@ CMD:=poetry run
 PYMODULE:=sr/robot3
 TESTS:=tests
 SPHINX_ARGS:=docs/ docs/_build -nWE
-EXTRACODE:=
+EXTRACODE:=docs/snippets/
 
 all: type test lint
 
@@ -14,9 +14,9 @@ docs:
 docs-serve:
 	$(CMD) sphinx-autobuild $(SPHINX_ARGS)
 
-
 lint:
-	$(CMD) flake8 $(PYMODULE) $(TESTS) $(EXTRACODE)
+	$(CMD) flake8 $(PYMODULE) $(TESTS)
+	$(CMD) flake8 --ignore D100 $(EXTRACODE)
 
 type:
 	$(CMD) mypy --namespace-packages -p sr.robot3
