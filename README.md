@@ -7,7 +7,7 @@
 
 Student Robotics API for Python 3
 
-This package uses [PEP420]()-style namespace packaging.
+This package uses [PEP420](https://www.python.org/dev/peps/pep-0420/)-style namespace packaging.
 
 ## Development
 
