@@ -20,6 +20,7 @@ from serial.tools.list_ports_common import ListPortInfo
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
+from .vision import SRZolotoSingleHardwareBackend
 
 __version__ = "2022.0.0a1"
 
@@ -75,7 +76,7 @@ class Robot(BaseRobot):
 
         self._init_metadata()
 
-        self._init_cameras()
+        self._init_cameras(0)
         self._init_power_board()
         self._init_auxilliary_boards()
 
@@ -89,10 +90,19 @@ class Robot(BaseRobot):
             LOGGER.debug("Auto start is disabled.")
             self.wait_start()
 
-    def _init_cameras(self) -> None:
+    def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
-        self._cameras = self._environment.get_board_group(ZolotoCameraBoard)
-        self._camera: ZolotoCameraBoard = self._cameras.singular()
+        backend_class = self._environment.get_backend(ZolotoCameraBoard)
+
+        if backend_class is SRZolotoSingleHardwareBackend:
+            backend = SRZolotoSingleHardwareBackend(
+                0,
+                marker_offset=marker_offset,
+            )
+        else:
+            backend = backend_class(0)  # type: ignore
+
+        self._camera = ZolotoCameraBoard("ZOLOTOCAM", backend)
 
     def _init_power_board(self) -> None:
         """

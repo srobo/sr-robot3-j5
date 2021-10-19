@@ -37,11 +37,26 @@ STRATEGIES: List[CalibrationStrategy] = [
     StaticStrategy("default"),  # Fallback onto something, rather than failing
 ]
 
-OFFSET = 100  # TODO: NOT THIS
-
 
 class SRZolotoCamera(Camera):
     """A Zoloto camera that correctly captures markers for SR."""
+
+    def __init__(
+        self,
+        camera_id: int,
+        *,
+        marker_size: Optional[int] = None,
+        marker_type: MarkerType,
+        calibration_file: Optional[Path] = None,
+        marker_offset: int = 0,
+    ) -> None:
+        super().__init__(
+            camera_id,
+            marker_size=marker_size,
+            marker_type=marker_type,
+            calibration_file=calibration_file,
+        )
+        self._marker_offset = marker_offset
 
     def _get_ids_and_corners(  # type: ignore
         self, frame: Optional['ndarray'] = None,
@@ -53,7 +68,7 @@ class SRZolotoCamera(Camera):
 
         # Copy list, map marker IDs and filter out ones not in game
         for raw_id, raw_corner in zip(raw_ids, raw_corners):
-            offset_id = raw_id - OFFSET
+            offset_id = raw_id - self._marker_offset
             if marker_used_in_game(offset_id):
                 ids.append(offset_id)
                 corners.append(raw_corner)
@@ -75,6 +90,15 @@ class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
 
     camera_class = SRZolotoCamera
     marker_type = MarkerType.APRILTAG_36H11
+
+    def __init__(self, camera_id: int, *, marker_offset: int = 0) -> None:
+        self._zcam = self.camera_class(
+            camera_id,
+            marker_type=self.marker_type,
+            calibration_file=self.get_calibration_file(),
+            marker_size=self.marker_size,
+            marker_offset=marker_offset,
+        )
 
     def get_calibration_file(self) -> Path:
         """Get the calibration file to use."""
