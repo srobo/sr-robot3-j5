@@ -9,13 +9,14 @@ SR custom behaviour for Zoloto.
 import importlib.resources
 import logging
 from pathlib import Path
-from typing import List
+from typing import List, Optional, Tuple
 
 from j5_zoloto import ZolotoSingleHardwareBackend
+from numpy import ndarray  # type: ignore
 from zoloto.cameras import Camera
 from zoloto.marker_type import MarkerType
 
-from sr.robot3.game import get_marker_size
+from sr.robot3.game import get_marker_size, marker_used_in_game
 
 from .strategy import (
     CalibrationStrategy,
@@ -36,9 +37,28 @@ STRATEGIES: List[CalibrationStrategy] = [
     StaticStrategy("default"),  # Fallback onto something, rather than failing
 ]
 
+OFFSET = 100  # TODO: NOT THIS
+
 
 class SRZolotoCamera(Camera):
     """A Zoloto camera that correctly captures markers for SR."""
+
+    def _get_ids_and_corners(  # type: ignore
+        self, frame: Optional['ndarray'] = None,
+    ) -> Tuple[List[int], List['ndarray']]:
+        raw_ids, raw_corners = super()._get_ids_and_corners(frame)
+
+        ids: List[int] = []
+        corners: List['ndarray'] = []   # type: ignore
+
+        # Copy list, map marker IDs and filter out ones not in game
+        for raw_id, raw_corner in zip(raw_ids, raw_corners):
+            offset_id = raw_id - OFFSET
+            if marker_used_in_game(offset_id):
+                ids.append(offset_id)
+                corners.append(raw_corner)
+
+        return ids, corners
 
     def get_marker_size(self, marker_id: int) -> int:
         """
