@@ -19,20 +19,18 @@ jobs:
         uses: actions/setup-python@v1
         with:
           python-version: ${{ matrix.python }}
-      - name: Install OpenCV
-        run: sudo apt install python3-opencv
       - name: Install Poetry
         run: pip install poetry
       - name: Use in-project virtualenv
         run: poetry config virtualenvs.in-project true
-      - name: Use system site-packages
-        run: poetry config virtualenvs.options.system-site-packages true
       - uses: actions/cache@v2
         with:
           path: .venv/
           key: ${{ runner.os }}-${{ matrix.python }}-pip-${{ hashFiles('poetry.lock') }}-${{ hashFiles('pyproject.toml') }}
       - name: Install dependencies
         run: poetry install
+      - name: Install OpenCV from PyPI
+        run: poetry run pip install opencv-contrib-python-headless
       - name: Lint
         run: make lint
       - name: Static type checking
