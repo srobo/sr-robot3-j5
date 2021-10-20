@@ -39,7 +39,7 @@ class Robot(BaseRobot):
     def __init__(
             self,
             *,
-            auto_start: bool = True,
+            auto_start: bool = False,
             verbose: bool = False,
             env: Environment = HARDWARE_ENVIRONMENT,
             ignored_ruggeduinos: Optional[List[str]] = None,
@@ -83,9 +83,9 @@ class Robot(BaseRobot):
 
         if auto_start:
             LOGGER.debug("Auto start is enabled.")
-            self.wait_start()
         else:
             LOGGER.debug("Auto start is disabled.")
+            self.wait_start()
 
     def _init_power_board(self) -> None:
         """
