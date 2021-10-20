@@ -45,7 +45,8 @@ class USBDevicePresentStrategy(CalibrationStrategy):
         """Gets the name of the calibration profile."""
         if usb.core.find(
                 idVendor=self._vendor_id,
-                idProduct=self._product_id) is not None:
+                idProduct=self._product_id,
+        ) is not None:
             return self._calibration_name
         else:
             return None
