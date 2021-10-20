@@ -6,7 +6,6 @@ SR custom behaviour for Zoloto.
 - Determine the size of a marker given the ID
 - Determine which OpenCV calibration to use for the currently connected camera.
 """
-import importlib.resources
 import logging
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -105,11 +104,8 @@ class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
         for strategy in STRATEGIES:
             filename = strategy.get_calibration_name()
             if filename is not None:
-                LOGGER.info(f"Using {filename} for webcam calibration")
-                with importlib.resources.path(
-                        "sr.robot3.vision.calibrations",
-                        f"{filename}.xml") as path:
-                    return path
+                LOGGER.debug(f"Using {filename} for webcam calibration")
+                return Path(__file__).parent / f'calibrations/{filename}.xml'
 
         # Should not be reachable as the static strategy will always match
         raise RuntimeError("Unable to determine calibration strategy.")
