@@ -10,4 +10,3 @@ if __name__ == '__main__':
         for m in markers:
             print(f"\tID: {m.id}")
             print(f"\t\tDistance: {m.distance}")
-            # print(f"\t\t{m.as_dict()}")
