@@ -112,6 +112,15 @@ class WaitForStartButtonBroadcastConsumer(StateConsumer):
 
     name = "sr-robot3-wait-start"
 
+    def __init__(
+        self,
+        verbose: bool,
+        config_file: Optional[str],
+        start_event: asyncio.Event,
+    ) -> None:
+        super().__init__(verbose, config_file)
+        self._start_event = start_event
+
     def _setup_logging(self, verbose: bool, *, welcome_message: bool = True) -> None:
         """Use the logging from sr-robot3."""
         # Suppress INFO messages from gmqtt
@@ -123,11 +132,18 @@ class WaitForStartButtonBroadcastConsumer(StateConsumer):
 
         Called in the constructor of the parent class.
         """
-        self._log_event = BroadcastHelper.get_helper(
+        self._trigger_event = BroadcastHelper.get_helper(
             self._mqtt,
             StartButtonBroadcastEvent,
         )
 
     async def main(self) -> None:
-        """Send a trigger event."""
-        await self._log_event.wait_broadcast()
+        """Wait for a trigger event."""
+        while not self._start_event.is_set():
+            # wait_broadcast waits forever until a broadcoast, so we will use a short
+            # timeout to ensure that the loop condition is checked.
+            try:
+                await asyncio.wait_for(self._trigger_event.wait_broadcast(), timeout=0.1)
+                self._start_event.set()
+            except asyncio.TimeoutError:
+                pass
