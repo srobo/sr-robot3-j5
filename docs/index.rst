@@ -24,12 +24,6 @@ It would be advisable to take note of these, they contain useful and important i
    :maxdepth: 1
    :caption: Contents:
 
-   running-code
-   power-board
-   motor-board
-   servo-board
-
-   ruggeduino
    advanced
    ref/index
 
