@@ -272,33 +272,34 @@ class Robot(BaseRobot):
         """
         LOGGER.info("Waiting for start signal")
 
-        astoria_start = WaitForStartButtonBroadcastConsumer(self._verbose, None)
-        flash_loop = True
+        start_event = asyncio.Event()
+
+        astoria_start = WaitForStartButtonBroadcastConsumer(
+            self._verbose,
+            None,  # Don't pass a config
+            start_event,
+        )
 
         async def wait_for_physical_start() -> None:
             self.power_board.piezo.buzz(timedelta(seconds=0.1), Note.A6)
             counter = 0
             led_state = False
-            while not self.power_board.start_button.is_pressed and flash_loop:
+            while not self.power_board.start_button.is_pressed and not start_event.is_set():  # noqa: E501
                 if counter % 6 == 0:
                     led_state = not led_state
                     self.power_board._run_led.state = led_state
                 await asyncio.sleep(0.05)
                 counter += 1
+            start_event.set()
             # Turn on the LED now that we are starting
             self.power_board._run_led.state = True
 
         loop.run_until_complete(
-            asyncio.wait(
-                [
-                    astoria_start.run(),
-                    wait_for_physical_start(),
-                ],
-                return_when=asyncio.FIRST_COMPLETED,
+            asyncio.gather(
+                astoria_start.run(),
+                wait_for_physical_start(),
             ),
         )
-
-        flash_loop = False  # Stop the flashing loop
 
         # Reload metadata as a metadata USB may have been inserted.
         # This ensures that the game timeout is observed even if the metadata
