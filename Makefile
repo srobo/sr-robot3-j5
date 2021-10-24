@@ -4,7 +4,7 @@ CMD:=poetry run
 PYMODULE:=sr/robot3
 TESTS:=tests
 SPHINX_ARGS:=docs/ docs/_build -nWE
-EXTRACODE:=docs/snippets/
+EXTRACODE:=
 
 all: type test lint
 
