@@ -30,6 +30,8 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.python }}-pip-${{ hashFiles('poetry.lock') }}-${{ hashFiles('pyproject.toml') }}
       - name: Install dependencies
         run: poetry install
+      - name: Install OpenCV
+        run: poetry run pip install opencv-contrib-headless-python
   
       - name: Build docs
         run: make docs
