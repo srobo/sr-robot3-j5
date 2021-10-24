@@ -340,33 +340,34 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">LOGGER</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Waiting for start signal&quot;</span><span class="p">)</span>
 
-        <span class="n">astoria_start</span> <span class="o">=</span> <span class="n">WaitForStartButtonBroadcastConsumer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
-        <span class="n">flash_loop</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="n">start_event</span> <span class="o">=</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">Event</span><span class="p">()</span>
+
+        <span class="n">astoria_start</span> <span class="o">=</span> <span class="n">WaitForStartButtonBroadcastConsumer</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_verbose</span><span class="p">,</span>
+            <span class="kc">None</span><span class="p">,</span>  <span class="c1"># Don&#39;t pass a config</span>
+            <span class="n">start_event</span><span class="p">,</span>
+        <span class="p">)</span>
 
         <span class="k">async</span> <span class="k">def</span> <span class="nf">wait_for_physical_start</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">piezo</span><span class="o">.</span><span class="n">buzz</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">seconds</span><span class="o">=</span><span class="mf">0.1</span><span class="p">),</span> <span class="n">Note</span><span class="o">.</span><span class="n">A6</span><span class="p">)</span>
             <span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
             <span class="n">led_state</span> <span class="o">=</span> <span class="kc">False</span>
-            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">is_pressed</span> <span class="ow">and</span> <span class="n">flash_loop</span><span class="p">:</span>
+            <span class="k">while</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">start_button</span><span class="o">.</span><span class="n">is_pressed</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">start_event</span><span class="o">.</span><span class="n">is_set</span><span class="p">():</span>  <span class="c1"># noqa: E501</span>
                 <span class="k">if</span> <span class="n">counter</span> <span class="o">%</span> <span class="mi">6</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="n">led_state</span> <span class="o">=</span> <span class="ow">not</span> <span class="n">led_state</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">_run_led</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">led_state</span>
                 <span class="k">await</span> <span class="n">asyncio</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
                 <span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="n">start_event</span><span class="o">.</span><span class="n">set</span><span class="p">()</span>
             <span class="c1"># Turn on the LED now that we are starting</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">power_board</span><span class="o">.</span><span class="n">_run_led</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="n">loop</span><span class="o">.</span><span class="n">run_until_complete</span><span class="p">(</span>
-            <span class="n">asyncio</span><span class="o">.</span><span class="n">wait</span><span class="p">(</span>
-                <span class="p">[</span>
-                    <span class="n">astoria_start</span><span class="o">.</span><span class="n">run</span><span class="p">(),</span>
-                    <span class="n">wait_for_physical_start</span><span class="p">(),</span>
-                <span class="p">],</span>
-                <span class="n">return_when</span><span class="o">=</span><span class="n">asyncio</span><span class="o">.</span><span class="n">FIRST_COMPLETED</span><span class="p">,</span>
+            <span class="n">asyncio</span><span class="o">.</span><span class="n">gather</span><span class="p">(</span>
+                <span class="n">astoria_start</span><span class="o">.</span><span class="n">run</span><span class="p">(),</span>
+                <span class="n">wait_for_physical_start</span><span class="p">(),</span>
             <span class="p">),</span>
         <span class="p">)</span>
-
-        <span class="n">flash_loop</span> <span class="o">=</span> <span class="kc">False</span>  <span class="c1"># Stop the flashing loop</span>
 
         <span class="c1"># Reload metadata as a metadata USB may have been inserted.</span>
         <span class="c1"># This ensures that the game timeout is observed even if the metadata</span>
