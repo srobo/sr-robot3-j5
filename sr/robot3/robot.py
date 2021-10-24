@@ -76,7 +76,7 @@ class Robot(BaseRobot):
 
         self._init_metadata()
 
-        self._init_cameras(0)
+        self._init_cameras(self.metadata.marker_offset)
         self._init_power_board()
         self._init_auxilliary_boards()
 
