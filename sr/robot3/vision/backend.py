@@ -20,7 +20,6 @@ from sr.robot3.game import get_marker_size, marker_used_in_game
 from .strategy import (
     CalibrationStrategy,
     MacSystemStrategy,
-    StaticStrategy,
     USBDevicePresentStrategy,
 )
 
@@ -33,7 +32,6 @@ STRATEGIES: List[CalibrationStrategy] = [
     USBDevicePresentStrategy(0x046d, 0x082d, "Logitech C920"),
     USBDevicePresentStrategy(0x0c45, 0x6713, "Microdia Integrated_Webcam_HD"),
     MacSystemStrategy(),
-    StaticStrategy("default"),  # Fallback onto something, rather than failing
 ]
 
 
@@ -99,7 +97,7 @@ class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
             marker_offset=marker_offset,
         )
 
-    def get_calibration_file(self) -> Path:
+    def get_calibration_file(self) -> Optional[Path]:
         """Get the calibration file to use."""
         for strategy in STRATEGIES:
             filename = strategy.get_calibration_name()
@@ -107,5 +105,4 @@ class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
                 LOGGER.debug(f"Using {filename} for webcam calibration")
                 return Path(__file__).parent / f'calibrations/{filename}.xml'
 
-        # Should not be reachable as the static strategy will always match
-        raise RuntimeError("Unable to determine calibration strategy.")
+        return None
