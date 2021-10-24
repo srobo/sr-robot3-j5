@@ -14,11 +14,13 @@ from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from j5.components.piezo import Note
+from j5_zoloto import ZolotoCameraBoard
 from serial.tools.list_ports_common import ListPortInfo
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
+from .vision import SRZolotoSingleHardwareBackend
 
 __version__ = "2022.0.0a1"
 
@@ -74,6 +76,7 @@ class Robot(BaseRobot):
 
         self._init_metadata()
 
+        self._init_cameras(0)
         self._init_power_board()
         self._init_auxilliary_boards()
 
@@ -86,6 +89,20 @@ class Robot(BaseRobot):
         else:
             LOGGER.debug("Auto start is disabled.")
             self.wait_start()
+
+    def _init_cameras(self, marker_offset: int) -> None:
+        """Initialise vision system for a single camera."""
+        backend_class = self._environment.get_backend(ZolotoCameraBoard)
+
+        if backend_class is SRZolotoSingleHardwareBackend:
+            backend = SRZolotoSingleHardwareBackend(
+                0,
+                marker_offset=marker_offset,
+            )
+        else:
+            backend = backend_class(0)  # type: ignore
+
+        self._camera = ZolotoCameraBoard("ZOLOTOCAM", backend)
 
     def _init_power_board(self) -> None:
         """
@@ -141,6 +158,15 @@ class Robot(BaseRobot):
             LOGGER.debug(
                 f"Firmware Version of {board.serial_number}: {board.firmware_version}",
             )
+
+    @property
+    def camera(self) -> ZolotoCameraBoard:
+        """
+        Get the robot's camera interface.
+
+        :returns: a :class:`j5_zoloto.board.ZolotoCameraBoard`.
+        """
+        return self._camera
 
     @property
     def motor_boards(self) -> BoardGroup[MotorBoard, Backend]:

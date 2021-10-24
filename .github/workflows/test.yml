@@ -29,6 +29,8 @@ jobs:
           key: ${{ runner.os }}-${{ matrix.python }}-pip-${{ hashFiles('poetry.lock') }}-${{ hashFiles('pyproject.toml') }}
       - name: Install dependencies
         run: poetry install
+      - name: Install OpenCV from PyPI
+        run: poetry run pip install opencv-contrib-python-headless
       - name: Lint
         run: make lint
       - name: Static type checking

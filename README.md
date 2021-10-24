@@ -37,6 +37,21 @@ You can also run parts of the suite.
 - Linting: `make lint`
 - Static type checks: `make type`
 
+### Adding camera calibrations
+
+You will need to print off a [chAruco marker grid](https://docs.opencv.org/4.5.3/charuco_board.png).
+
+`opencv_interactive-calibration -t=charuco -sz=GRID_SIZE`
+
+Replace GRID_SIZE with the length of one of the larger squares (in mm) from the printed marker grid.
+
+Use `-ci=1` for specifying camera index if multiple cameras are connected.
+
+Point the camera at the marker grid. Until DF is at or below 30 then press S to save.
+This will output a `cameraParameters.xml` file. Place this file in `sr/robot3/vision/calibrations` named by the camera model.
+
+You will need to add a detection strategy for the camera in to `sr/robot3/vision/backend.py`.
+
 ## Contributions
 
 This project is released under the MIT Licence. For more information, please see LICENSE.
