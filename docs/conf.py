@@ -27,6 +27,7 @@ exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 intersphinx_mapping = {
     "astoria": ("https://srobo.github.io/astoria/", None),
     "j5": ("https://j5.org.uk/en/main/", None),
+    "j5_zoloto": ("https://j5api.github.io/j5-zoloto/", None),
     "python": ("https://docs.python.org/3", None),
 }
 
