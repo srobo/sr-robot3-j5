@@ -11,7 +11,7 @@ MARKER_SIZES: Dict[Container[int], int] = {
 }
 
 
-def marker_used_in_game(marker_id: int) -> int:
+def marker_used_in_game(marker_id: int) -> bool:
     """
     Determine whether the marker ID is used in the game.
 
