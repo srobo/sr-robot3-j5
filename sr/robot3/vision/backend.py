@@ -105,4 +105,7 @@ class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
                 LOGGER.debug(f"Using {filename} for webcam calibration")
                 return Path(__file__).parent / f'calibrations/{filename}.xml'
 
+        LOGGER.warning(
+            "Unable to determine camera calibration, disabling pose estimation",
+        )
         return None
