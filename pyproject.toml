@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sr.robot3"
-version = "2022.0.0a1"
+version = "2022.0.0a2"
 description = "Student Robotics API for Python 3"
 authors = ["Student Robotics <kit-brain@studentrobotics.org>"]
 license = "MIT"
