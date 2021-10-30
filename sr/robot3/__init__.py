@@ -14,6 +14,14 @@ logger_setup()
 COAST = MotorSpecialState.COAST
 BRAKE = MotorSpecialState.BRAKE
 
+# Ruggeduino Analogue pin values
+A0 = 14
+A1 = 15
+A2 = 16
+A3 = 17
+A4 = 18
+A5 = 19
+
 ANALOGUE_INPUT = GPIOPinMode.ANALOGUE_INPUT
 ANALOGUE_OUTPUT = GPIOPinMode.ANALOGUE_OUTPUT
 INPUT = GPIOPinMode.DIGITAL_INPUT
@@ -33,6 +41,12 @@ OUT_L2 = PowerOutputPosition.L2
 OUT_L3 = PowerOutputPosition.L3
 
 __all__ = [
+    "A0",
+    "A1",
+    "A2",
+    "A3",
+    "A4",
+    "A5",
     "ANALOGUE_INPUT",
     "ANALOGUE_OUTPUT",
     "BRAKE",
