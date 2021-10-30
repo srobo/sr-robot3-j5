@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sr.robot3"
-version = "2022.0.0a1"
+version = "2022.0.0a2"
 description = "Student Robotics API for Python 3"
 authors = ["Student Robotics <kit-brain@studentrobotics.org>"]
 license = "MIT"
@@ -21,7 +21,7 @@ python = "^3.6"
 j5 = "^0.13.0"
 j5-zoloto = "^0.1.0"
 pyserial = "^3.4"
-astoria = "^0.4.0"
+astoria = "^0.5.1"
 
 
 [tool.poetry.dev-dependencies]

@@ -22,7 +22,7 @@ from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
 from .vision import SRZolotoSingleHardwareBackend
 
-__version__ = "2022.0.0a1"
+__version__ = "2022.0.0a2"
 
 LOGGER = logging.getLogger(__name__)
 
@@ -76,7 +76,7 @@ class Robot(BaseRobot):
 
         self._init_metadata()
 
-        self._init_cameras(0)
+        self._init_cameras(self.metadata.marker_offset)
         self._init_power_board()
         self._init_auxilliary_boards()
 
