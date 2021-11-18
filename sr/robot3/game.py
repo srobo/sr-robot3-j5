@@ -7,7 +7,7 @@ class UnusedMarkerException(Exception):
 
 
 MARKER_SIZES: Dict[Container[int], int] = {
-    range(28): 250,  # 0 - 27 for arena boundary
+    range(28): 200,  # 0 - 27 for arena boundary
 }
 
 
