@@ -70,8 +70,8 @@ class Robot(BaseRobot):
         else:
             self._ignored_ruggeduino_serials = ignored_ruggeduinos
 
-        LOGGER.info(f"sr.robot3 version {__version__}")
         LOGGER.debug("Verbose mode enabled.")
+        LOGGER.debug(f"sr.robot3 version {__version__}")
         LOGGER.debug(f"j5 version {j5_version}")
         LOGGER.debug(f"Environment: {self._environment.name}")
 
