@@ -12,6 +12,7 @@ from typing import List, Optional, Tuple
 
 from j5_zoloto import ZolotoSingleHardwareBackend
 from numpy import ndarray  # type: ignore
+from zoloto.calibration import parse_calibration_file
 from zoloto.cameras import Camera
 from zoloto.marker_type import MarkerType
 
@@ -47,11 +48,17 @@ class SRZolotoCamera(Camera):
         calibration_file: Optional[Path] = None,
         marker_offset: int = 0,
     ) -> None:
+        if calibration_file is not None:
+            resolution = parse_calibration_file(calibration_file).resolution
+        else:
+            resolution = None
+
         super().__init__(
             camera_id,
             marker_size=marker_size,
             marker_type=marker_type,
             calibration_file=calibration_file,
+            resolution=resolution,
         )
         self._marker_offset = marker_offset
 
