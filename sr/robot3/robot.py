@@ -2,6 +2,7 @@
 
 import asyncio
 import logging
+import os
 from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Type
@@ -64,6 +65,9 @@ class Robot(BaseRobot):
 
         if verbose:
             LOGGER.setLevel(logging.DEBUG)
+            os.environ["OPENCV_LOG_LEVEL"] = "DEBUG"
+        else:
+            os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
 
         if ignored_ruggeduinos is None:
             self._ignored_ruggeduino_serials = []
