@@ -48,10 +48,10 @@ class SRZolotoCamera(Camera):
         calibration_file: Optional[Path] = None,
         marker_offset: int = 0,
     ) -> None:
+        resolution: Optional[Tuple[int, int]] = None
+
         if calibration_file is not None:
             resolution = parse_calibration_file(calibration_file).resolution
-        else:
-            resolution = None
 
         super().__init__(
             camera_id,
