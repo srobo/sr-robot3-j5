@@ -4,7 +4,7 @@ import asyncio
 import logging
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Set, Type
 
 from astoria.common.messages.astmetad import Metadata, RobotMode
 from j5 import BaseRobot, Environment
@@ -14,8 +14,9 @@ from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from j5.components.piezo import Note
-from j5_zoloto import ZolotoCameraBoard
+from j5_zoloto import ZolotoCameraBoard, ZolotoHardwareBackend
 from serial.tools.list_ports_common import ListPortInfo
+from zoloto.cameras.camera import find_camera_ids
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
@@ -93,10 +94,26 @@ class Robot(BaseRobot):
 
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
-        backend_class = self._environment.get_backend(ZolotoCameraBoard)
+        backend_class: Type[Backend] = self._environment.get_backend(ZolotoCameraBoard)
 
+        # Override the hardware backend with our custom one
         if backend_class is ZolotoHardwareBackend:
             backend_class = SRZolotoHardwareBackend
+
+        class OffsetZolotoBackend(backend_class):  # type: ignore
+            """
+            A zoloto backend, with marker offsets added.
+            """
+
+            @classmethod
+            def discover(cls) -> Set[Board]:
+                return {
+                    ZolotoCameraBoard(
+                        str(camera_id),
+                        cls(camera_id, marker_offset=marker_offset),
+                    )
+                    for camera_id in find_camera_ids()
+                }
 
         self._cameras = BoardGroup.get_board_group(
             ZolotoCameraBoard,
