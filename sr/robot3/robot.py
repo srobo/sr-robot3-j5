@@ -101,9 +101,7 @@ class Robot(BaseRobot):
             backend_class = SRZolotoHardwareBackend
 
         class OffsetZolotoBackend(backend_class):  # type: ignore
-            """
-            A zoloto backend, with marker offsets added.
-            """
+            """A zoloto backend, with marker offsets added."""
 
             @classmethod
             def discover(cls) -> Set[Board]:
