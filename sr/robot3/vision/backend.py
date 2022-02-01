@@ -10,7 +10,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from j5_zoloto import ZolotoSingleHardwareBackend
+from j5_zoloto import ZolotoHardwareBackend
 from numpy import ndarray  # type: ignore
 from zoloto.calibration import parse_calibration_file
 from zoloto.cameras import Camera
@@ -89,7 +89,7 @@ class SRZolotoCamera(Camera):
         return get_marker_size(marker_id)
 
 
-class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
+class SRZolotoHardwareBackend(ZolotoHardwareBackend):
     """A camera backend which automatically finds camera calibration data."""
 
     camera_class = SRZolotoCamera

@@ -20,7 +20,7 @@ from serial.tools.list_ports_common import ListPortInfo
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
-from .vision import SRZolotoSingleHardwareBackend
+from .vision import SRZolotoHardwareBackend
 
 __version__ = "2022.0.2"
 
@@ -95,8 +95,8 @@ class Robot(BaseRobot):
         """Initialise vision system for a single camera."""
         backend_class = self._environment.get_backend(ZolotoCameraBoard)
 
-        if backend_class is SRZolotoSingleHardwareBackend:
-            backend = SRZolotoSingleHardwareBackend(
+        if backend_class is SRZolotoHardwareBackend:
+            backend = SRZolotoHardwareBackend(
                 0,
                 marker_offset=marker_offset,
             )
