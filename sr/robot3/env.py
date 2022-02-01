@@ -19,7 +19,7 @@ __all__ = [
     "CONSOLE_ENVIRONMENT",
 ]
 
-from sr.robot3.vision import SRZolotoSingleHardwareBackend
+from sr.robot3.vision import SRZolotoHardwareBackend
 
 HARDWARE_ENVIRONMENT = Environment("Hardware Environment")
 
@@ -27,7 +27,7 @@ HARDWARE_ENVIRONMENT.register_backend(SRV4PowerBoardHardwareBackend)
 HARDWARE_ENVIRONMENT.register_backend(SRV4ServoBoardHardwareBackend)
 HARDWARE_ENVIRONMENT.register_backend(SRV4MotorBoardHardwareBackend)
 HARDWARE_ENVIRONMENT.register_backend(SRV4RuggeduinoHardwareBackend)
-HARDWARE_ENVIRONMENT.register_backend(SRZolotoSingleHardwareBackend)
+HARDWARE_ENVIRONMENT.register_backend(SRZolotoHardwareBackend)
 
 CONSOLE_ENVIRONMENT = Environment("Console Environment")
 
@@ -42,4 +42,4 @@ CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRV4PowerBoardConsoleBackend)
 CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRV4ServoBoardConsoleBackend)
 CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRV4MotorBoardConsoleBackend)
 CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRV4RuggeduinoConsoleBackend)
-CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRZolotoSingleHardwareBackend)
+CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRZolotoHardwareBackend)

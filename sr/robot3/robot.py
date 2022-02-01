@@ -5,7 +5,7 @@ import logging
 import os
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Set, Type
 
 from astoria.common.messages.astmetad import Metadata, RobotMode
 from j5 import BaseRobot, Environment
@@ -15,13 +15,14 @@ from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, ServoBoard
 from j5.boards.sr.v4.ruggeduino import Ruggeduino
 from j5.components.piezo import Note
-from j5_zoloto import ZolotoCameraBoard
+from j5_zoloto import ZolotoCameraBoard, ZolotoHardwareBackend
 from serial.tools.list_ports_common import ListPortInfo
+from zoloto.cameras.camera import find_camera_ids
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
-from .vision import SRZolotoSingleHardwareBackend
+from .vision import SRZolotoHardwareBackend
 
 __version__ = "2022.0.2"
 
@@ -97,17 +98,29 @@ class Robot(BaseRobot):
 
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
-        backend_class = self._environment.get_backend(ZolotoCameraBoard)
+        backend_class: Type[Backend] = self._environment.get_backend(ZolotoCameraBoard)
 
-        if backend_class is SRZolotoSingleHardwareBackend:
-            backend = SRZolotoSingleHardwareBackend(
-                0,
-                marker_offset=marker_offset,
-            )
-        else:
-            backend = backend_class(0)  # type: ignore
+        # Override the hardware backend with our custom one
+        if backend_class is ZolotoHardwareBackend:
+            backend_class = SRZolotoHardwareBackend
 
-        self._camera = ZolotoCameraBoard("ZOLOTOCAM", backend)
+        class OffsetZolotoBackend(backend_class):  # type: ignore
+            """A zoloto backend, with marker offsets added."""
+
+            @classmethod
+            def discover(cls) -> Set[Board]:
+                return {
+                    ZolotoCameraBoard(
+                        str(camera_id),
+                        cls(camera_id, marker_offset=marker_offset),
+                    )
+                    for camera_id in find_camera_ids()
+                }
+
+        self._cameras = BoardGroup.get_board_group(
+            ZolotoCameraBoard,
+            backend_class,
+        )
 
     def _init_power_board(self) -> None:
         """
@@ -171,7 +184,7 @@ class Robot(BaseRobot):
 
         :returns: a :class:`j5_zoloto.board.ZolotoCameraBoard`.
         """
-        return self._camera
+        return self._cameras.singular()
 
     @property
     def motor_boards(self) -> BoardGroup[MotorBoard, Backend]:

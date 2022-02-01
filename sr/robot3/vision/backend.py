@@ -10,8 +10,9 @@ import logging
 from pathlib import Path
 from typing import List, Optional, Tuple
 
-from j5_zoloto import ZolotoSingleHardwareBackend
+from j5_zoloto import ZolotoHardwareBackend
 from numpy import ndarray  # type: ignore
+from zoloto.calibration import parse_calibration_file
 from zoloto.cameras import Camera
 from zoloto.marker_type import MarkerType
 
@@ -47,11 +48,17 @@ class SRZolotoCamera(Camera):
         calibration_file: Optional[Path] = None,
         marker_offset: int = 0,
     ) -> None:
+        resolution: Optional[Tuple[int, int]] = None
+
+        if calibration_file is not None:
+            resolution = parse_calibration_file(calibration_file).resolution
+
         super().__init__(
             camera_id,
             marker_size=marker_size,
             marker_type=marker_type,
             calibration_file=calibration_file,
+            resolution=resolution,
         )
         self._marker_offset = marker_offset
 
@@ -82,7 +89,7 @@ class SRZolotoCamera(Camera):
         return get_marker_size(marker_id)
 
 
-class SRZolotoSingleHardwareBackend(ZolotoSingleHardwareBackend):
+class SRZolotoHardwareBackend(ZolotoHardwareBackend):
     """A camera backend which automatically finds camera calibration data."""
 
     camera_class = SRZolotoCamera
