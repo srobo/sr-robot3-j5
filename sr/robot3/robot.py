@@ -95,15 +95,13 @@ class Robot(BaseRobot):
         """Initialise vision system for a single camera."""
         backend_class = self._environment.get_backend(ZolotoCameraBoard)
 
-        if backend_class is SRZolotoHardwareBackend:
-            backend = SRZolotoHardwareBackend(
-                0,
-                marker_offset=marker_offset,
-            )
-        else:
-            backend = backend_class(0)  # type: ignore
+        if backend_class is ZolotoHardwareBackend:
+            backend_class = SRZolotoHardwareBackend
 
-        self._camera = ZolotoCameraBoard("ZOLOTOCAM", backend)
+        self._cameras = BoardGroup.get_board_group(
+            ZolotoCameraBoard,
+            backend_class,
+        )
 
     def _init_power_board(self) -> None:
         """
@@ -167,7 +165,7 @@ class Robot(BaseRobot):
 
         :returns: a :class:`j5_zoloto.board.ZolotoCameraBoard`.
         """
-        return self._camera
+        return self._cameras.singular()
 
     @property
     def motor_boards(self) -> BoardGroup[MotorBoard, Backend]:
