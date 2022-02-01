@@ -17,9 +17,9 @@ packages = [
 ]
 
 [tool.poetry.dependencies]
-python = "^3.6"
+python = "^3.7"
 j5 = "^0.13.0"
-j5-zoloto = "^0.1.0"
+j5-zoloto = "^0.2.0"
 pyserial = "^3.4"
 astoria = "^0.5.1"
 
