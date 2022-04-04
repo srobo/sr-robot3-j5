@@ -119,7 +119,7 @@ class Robot(BaseRobot):
 
         self._cameras = BoardGroup.get_board_group(
             ZolotoCameraBoard,
-            backend_class,
+            OffsetZolotoBackend,
         )
 
     def _init_power_board(self) -> None:
