@@ -168,6 +168,9 @@ class Robot(BaseRobot):
     def _init_metadata(self) -> None:
         """Fetch metadata from Astoria."""
         self._metadata, self._code_path = GetMetadataConsumer.get_metadata()
+        if hasattr(self, '_cameras'):
+            for camera in self._cameras:
+                camera._backend._zcam._marker_offset = self._metadata.marker_offset
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
