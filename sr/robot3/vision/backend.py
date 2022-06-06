@@ -31,6 +31,8 @@ STRATEGIES: List[CalibrationStrategy] = [
     USBDevicePresentStrategy(0x046d, 0x0807, "Logitech B500"),
     USBDevicePresentStrategy(0x046d, 0x080a, "Logitech C905"),
     USBDevicePresentStrategy(0x046d, 0x082d, "Logitech C920"),
+    USBDevicePresentStrategy(0x046d, 0x0892, "Logitech C920"),
+    USBDevicePresentStrategy(0x046d, 0x08E5, "Logitech C920"),  # C920 PRO
     USBDevicePresentStrategy(0x0c45, 0x6713, "Microdia Integrated_Webcam_HD"),
     MacSystemStrategy(),
 ]
