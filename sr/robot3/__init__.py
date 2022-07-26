@@ -1,6 +1,6 @@
 """sr.robot3 - Student Robotics API for Python 3."""
 
-from astoria.common.messages.astmetad import RobotMode
+from astoria.common.metadata import RobotMode
 from j5.boards.sr.v4 import PowerOutputPosition
 from j5.components.gpio_pin import GPIOPinMode
 from j5.components.motor import MotorSpecialState
