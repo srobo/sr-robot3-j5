@@ -1,12 +1,13 @@
 """Code to kill robot after certain amount of time."""
 import logging
-from signal import SIGALRM, Signals, alarm, signal
+from signal import SIGALRM, alarm, signal
 from types import FrameType
+from typing import Optional
 
 LOGGER = logging.getLogger(__name__)
 
 
-def timeout_handler(signal_type: Signals, stack_frame: FrameType) -> None:
+def timeout_handler(signal_type: int, stack_frame: Optional[FrameType]) -> None:
     """Handle the `SIGALRM` to kill the current process."""
     raise SystemExit("Timeout expired: Game Over!")
 

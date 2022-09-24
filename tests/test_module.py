@@ -1,8 +1,8 @@
 """Test that the sr.robot3 imports as expected."""
 from enum import Enum
-from typing import Callable, Type
+from typing import Callable, Optional, Set, Type
 
-from astoria.common.messages.astmetad import RobotMode
+from astoria.common.metadata import RobotMode
 from j5.boards.sr.v4 import PowerOutputPosition
 from j5.components.gpio_pin import GPIOPinMode
 from j5.components.motor import MotorSpecialState
@@ -24,9 +24,14 @@ def test_enum_constants_are_exported() -> None:
     def check_enum_members_are_exported(
             enum: Type[Enum],
             transform: Callable[[str], str] = lambda x: x,
+            *,
+            skip_names: Optional[Set[str]] = None,
     ) -> None:
         """Check that all members of an enum are exported at the top level."""
+        skip_names = skip_names or set()
         for member in enum:
+            if member.name in skip_names:
+                continue
             constant_name = transform(member.name)
             member_from_module = getattr(sr.robot3, constant_name)
             assert member is member_from_module
@@ -37,7 +42,11 @@ def test_enum_constants_are_exported() -> None:
         lambda x: x[len("DIGITAL_"):] if x.startswith("DIGITAL_") else x,
     )
     check_enum_members_are_exported(MotorSpecialState)
-    check_enum_members_are_exported(PowerOutputPosition, lambda x: f"OUT_{x}")
+    check_enum_members_are_exported(
+        PowerOutputPosition,
+        lambda x: f"OUT_{x}",
+        skip_names={"L2"},
+    )
     check_enum_members_are_exported(RobotMode)
 
 
