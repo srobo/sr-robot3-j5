@@ -1,6 +1,6 @@
 """sr.robot3 - Student Robotics API for Python 3."""
 
-from astoria.common.messages.astmetad import RobotMode
+from astoria.common.metadata import RobotMode
 from j5.boards.sr.v4 import PowerOutputPosition
 from j5.components.gpio_pin import GPIOPinMode
 from j5.components.motor import MotorSpecialState
@@ -37,8 +37,8 @@ OUT_H0 = PowerOutputPosition.H0
 OUT_H1 = PowerOutputPosition.H1
 OUT_L0 = PowerOutputPosition.L0
 OUT_L1 = PowerOutputPosition.L1
-OUT_L2 = PowerOutputPosition.L2
 OUT_L3 = PowerOutputPosition.L3
+OUT_FIVE_VOLT = PowerOutputPosition.FIVE_VOLT
 
 __all__ = [
     "A0",
@@ -58,11 +58,11 @@ __all__ = [
     "INPUT_PULLUP",
     "Note",
     "OUTPUT",
+    "OUT_FIVE_VOLT",
     "OUT_H0",
     "OUT_H1",
     "OUT_L0",
     "OUT_L1",
-    "OUT_L2",
     "OUT_L3",
     "PWM_OUTPUT",
     "Robot",

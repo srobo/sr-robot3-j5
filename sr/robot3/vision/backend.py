@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import List, Optional, Tuple
 
 from j5_zoloto import ZolotoHardwareBackend
-from numpy import ndarray  # type: ignore
+from numpy.typing import NDArray
 from zoloto.calibration import parse_calibration_file
 from zoloto.cameras import Camera
 from zoloto.marker_type import MarkerType
@@ -64,13 +64,13 @@ class SRZolotoCamera(Camera):
         )
         self._marker_offset = marker_offset
 
-    def _get_ids_and_corners(  # type: ignore
-        self, frame: Optional['ndarray'] = None,
-    ) -> Tuple[List[int], List['ndarray']]:
+    def _get_ids_and_corners(
+        self, frame: Optional[NDArray] = None,  # type: ignore[type-arg]
+    ) -> Tuple[List[int], List[NDArray]]:  # type: ignore[type-arg]
         raw_ids, raw_corners = super()._get_ids_and_corners(frame)
 
         ids: List[int] = []
-        corners: List['ndarray'] = []   # type: ignore
+        corners: List[NDArray] = []   # type: ignore[type-arg]
 
         # Copy list, map marker IDs and filter out ones not in game
         for raw_id, raw_corner in zip(raw_ids, raw_corners):
