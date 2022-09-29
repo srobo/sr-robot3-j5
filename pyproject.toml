@@ -19,10 +19,9 @@ packages = [
 [tool.poetry.dependencies]
 python = "^3.8"
 j5 = "^1.1.0"
-j5-zoloto = "^0.3.0"
+j5-zoloto = "^0.4.0"
 pyserial = "^3.4"
 astoria = "^0.9.0"
-zoloto = { git = "https://github.com/realorangeone/zoloto.git" }
 
 
 [tool.poetry.dev-dependencies]
