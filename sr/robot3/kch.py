@@ -206,3 +206,4 @@ class SRKCHDaemonBackend(RGBLEDInterface, Backend):
         :param duty_cycle: desired duty cycle of the LED.
         """
         self._leds[identifier][self._channel_to_index(channel)] = bool(duty_cycle)
+        self._update_leds()
