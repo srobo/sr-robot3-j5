@@ -14,6 +14,8 @@ from j5.backends.hardware.sr.v4 import (
     SRV4ServoBoardHardwareBackend,
 )
 
+from .kch import SRKCHDaemonBackend
+
 __all__ = [
     "HARDWARE_ENVIRONMENT",
     "CONSOLE_ENVIRONMENT",
@@ -27,6 +29,7 @@ HARDWARE_ENVIRONMENT.register_backend(SRV4PowerBoardHardwareBackend)
 HARDWARE_ENVIRONMENT.register_backend(SRV4ServoBoardHardwareBackend)
 HARDWARE_ENVIRONMENT.register_backend(SRV4MotorBoardHardwareBackend)
 HARDWARE_ENVIRONMENT.register_backend(SRV4RuggeduinoHardwareBackend)
+HARDWARE_ENVIRONMENT.register_backend(SRKCHDaemonBackend)
 HARDWARE_ENVIRONMENT.register_backend(SRZolotoHardwareBackend)
 
 CONSOLE_ENVIRONMENT = Environment("Console Environment")
