@@ -322,6 +322,15 @@ class Robot(BaseRobot):
         """
         return self.metadata.zone
 
+    def print_wifi_details(self) -> None:
+        """Prints the current WiFi details stored in robot-settings.toml."""
+        if not self.metadata.wifi_enabled:
+            LOGGER.warn("Could not print WiFi details - WiFi is not enabled")
+            return
+        LOGGER.info("WiFi credentials:")
+        LOGGER.info(f"SSID: {self.metadata.wifi_ssid}")
+        LOGGER.info(f"Password: {self.metadata.wifi_psk}")
+
     def wait_start(self) -> None:
         """
         Wait for a start signal.
