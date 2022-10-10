@@ -155,7 +155,11 @@ class SRKCHDaemonBackend(RGBLEDInterface, Backend):
             LOGGER.warning("KCH Daemon took too long to respond, giving up.")
 
     async def _set_leds(self) -> None:
-        await self._kchdc._ready.wait()
+        try:
+            await asyncio.wait_for(self._kchdc._ready.wait(), timeout=1.0)
+        except asyncio.TimeoutError:
+            LOGGER.error("Failed to set LED on KCH")
+            return
         await self._kchdc._mqtt.manager_request(
             "kchd",
             "user_leds",
