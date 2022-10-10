@@ -7,7 +7,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Type
 
-from astoria.common.messages.astmetad import Metadata, RobotMode
+from astoria.common.metadata import Metadata, RobotMode
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
 from j5.backends import Backend
@@ -24,7 +24,7 @@ from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
-__version__ = "2022.1.2"
+__version__ = "2023.0.0"
 
 
 LOGGER = logging.getLogger(__name__)

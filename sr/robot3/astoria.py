@@ -6,11 +6,15 @@ from json import JSONDecodeError, loads
 from pathlib import Path
 from typing import Match, NamedTuple, Optional
 
-from astoria.common.broadcast_event import StartButtonBroadcastEvent
-from astoria.common.consumer import StateConsumer
-from astoria.common.messages.astmetad import Metadata, MetadataManagerMessage
-from astoria.common.messages.astprocd import ProcessManagerMessage
-from astoria.common.mqtt.broadcast_helper import BroadcastHelper
+from astoria.common.components import StateConsumer
+from astoria.common.ipc import (
+    MetadataManagerMessage,
+    ProcessManagerMessage,
+    StartButtonBroadcastEvent,
+)
+from astoria.common.metadata import Metadata
+from astoria.common.mqtt import BroadcastHelper
+from pydantic import parse_obj_as
 
 LOGGER = logging.getLogger(__name__)
 
@@ -50,7 +54,7 @@ class GetMetadataConsumer(StateConsumer):
         """Handle astmetad status messages."""
         async with self._state_lock:
             try:
-                message = MetadataManagerMessage(**loads(payload))
+                message = parse_obj_as(MetadataManagerMessage, loads(payload))
                 if message.status == MetadataManagerMessage.Status.RUNNING:
                     LOGGER.debug("Received metadata")
                     self._metadata_message = message
@@ -69,7 +73,7 @@ class GetMetadataConsumer(StateConsumer):
         """Handle astprocd status messages."""
         async with self._state_lock:
             try:
-                message = ProcessManagerMessage(**loads(payload))
+                message = parse_obj_as(ProcessManagerMessage, loads(payload))
                 if message.status == ProcessManagerMessage.Status.RUNNING:
                     LOGGER.debug("Received process info")
                     self._proc_message = message
