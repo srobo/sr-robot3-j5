@@ -1,6 +1,7 @@
 """KCH Daemon Backend."""
 import asyncio
 import logging
+from functools import cached_property
 from json import JSONDecodeError, loads
 from typing import Match, Optional, Set, Tuple, cast
 from uuid import uuid4
@@ -31,7 +32,7 @@ class KCHDaemonConsumer(StateConsumer):
         self._state_lock = asyncio.Lock()
         self._mqtt.subscribe("kchd", self._handle_kchd_message)
 
-    @property
+    @cached_property
     def name(self) -> str:
         """
         MQTT client name of the data component.
