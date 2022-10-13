@@ -160,6 +160,13 @@ class SRKCHDaemonBackend(RGBLEDInterface, Backend):
         except asyncio.TimeoutError:
             LOGGER.error("Failed to set LED on KCH")
             return
+        if not self._kchdc._mqtt.is_connected:
+            try:
+                # Suppress logging while we reconnect
+                logging.disable(logging.ERROR)
+                await self._kchdc._mqtt.connect()
+            finally:
+                logging.disable(logging.NOTSET)
         await self._kchdc._mqtt.manager_request(
             "kchd",
             "user_leds",
