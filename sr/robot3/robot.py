@@ -24,7 +24,7 @@ from .env import HARDWARE_ENVIRONMENT
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
-__version__ = "2023.0.0"
+__version__ = "2023.0.1"
 
 
 LOGGER = logging.getLogger(__name__)
