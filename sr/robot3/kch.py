@@ -1,4 +1,5 @@
 """KCH Driver."""
+import atexit
 import warnings
 from enum import IntEnum, unique
 from typing import List, Tuple, Union
@@ -78,14 +79,13 @@ class KCH:
                 GPIO.setup(RobotLEDs.all_leds(), GPIO.OUT, initial=GPIO.LOW)
         self._leds = LEDs(RobotLEDs.user_leds())
 
-    def __del__(self) -> None:
         # We are not running cleanup so the LED state persits after the code completes,
         # this will cause a warning with `GPIO.setup()` which we can suppress
         if HAS_HAT:
-            # GPIO.cleanup()
+            # atexit.register(GPIO.cleanup)
 
-            # Turn off start LED when the code exits
-            GPIO.cleanup(RobotLEDs.START)
+            # Cleanup just the start LED to turn it off when the code exits
+            atexit.register(GPIO.cleanup, RobotLEDs.START)
 
     @property
     def start(self) -> bool:
