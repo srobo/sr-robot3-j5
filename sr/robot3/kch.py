@@ -1,221 +1,187 @@
-"""KCH Daemon Backend."""
-import asyncio
-import logging
-from functools import cached_property
-from json import JSONDecodeError, loads
-from typing import Match, Optional, Set, Tuple, cast
-from uuid import uuid4
+"""KCH Driver."""
+from enum import IntEnum, unique
+from typing import List, Tuple, Union
+from warnings import catch_warnings
 
-from astoria.common.components import StateConsumer
-from astoria.common.ipc import ManagerRequest
-from j5.backends import Backend
-from j5.boards import Board
-from j5.boards.sr import KCHBoard
-from j5.components import RGBColour, RGBLEDInterface
-
-LOGGER = logging.getLogger(__name__)
-
-loop = asyncio.get_event_loop()
+try:
+    import RPi.GPIO as GPIO  # isort: ignore
+    HAS_HAT = True
+except ImportError:
+    HAS_HAT = False
 
 
-class KCHDaemonConsumer(StateConsumer):
-    """KCH Daemon Consumer - Fetch the KCH info."""
+@unique
+class RobotLEDs(IntEnum):
+    """Mapping of LEDs to GPIO Pins."""
 
-    def _setup_logging(self, verbose: bool, *, welcome_message: bool = True) -> None:
-        """Use the logging from sr-robot3."""
-        # Suppress INFO messages from gmqtt
-        logging.getLogger("gmqtt").setLevel(logging.WARNING)
+    START = 9
 
-    def _init(self) -> None:
-        """Initialise consumer."""
-        self._kch_info = None
-        self._state_lock = asyncio.Lock()
-        self._mqtt.subscribe("kchd", self._handle_kchd_message)
-
-    @cached_property
-    def name(self) -> str:
-        """
-        MQTT client name of the data component.
-
-        This should be unique, as clashes will cause unexpected disconnections.
-        """
-        return f"sr-robot3-kchd-{uuid4()}"
-
-    async def _handle_kchd_message(
-        self,
-        match: Match[str],
-        payload: str,
-    ) -> None:
-        """Handle kchd status messages."""
-        async with self._state_lock:
-            try:
-                message = loads(payload)
-                if message["status"] == "RUNNING":
-                    LOGGER.debug("Received KCH info")
-                    self._kch_info = message["kch"]["asset_code"]
-                else:
-                    LOGGER.warn("kchd is not running")
-            except JSONDecodeError:
-                LOGGER.error("Could not decode JSON metadata.")
-            if message is not None:
-                self.halt(silent=True)
-
-    async def main(self) -> None:
-        """Main method of the command."""
-        await self.wait_loop()
+    USER_A_RED = 24
+    USER_A_GREEN = 10
+    USER_A_BLUE = 25
+    USER_B_RED = 27
+    USER_B_GREEN = 23
+    USER_B_BLUE = 22
+    USER_C_RED = 4
+    USER_C_GREEN = 18
+    USER_C_BLUE = 17
 
     @classmethod
-    def get_kch(cls) -> Optional[str]:
-        """Get metadata."""
-        kchdc = cls(False, None)
-
-        try:
-            loop.run_until_complete(asyncio.wait_for(kchdc.run(), timeout=0.1))
-            if kchdc._kch_info is not None:
-                return kchdc._kch_info
-            else:
-                return None
-        except ConnectionRefusedError:
-            LOGGER.warning("Unable to connect to MQTT broker")
-            return None
-        except asyncio.TimeoutError:
-            LOGGER.warning("KCH Daemon took too long to respond, giving up.")
-            return None
-
-
-class KCHDaemonControlConsumer(StateConsumer):
-    """KCH LED Control Consumer."""
-
-    dependencies = ["kchd"]
-
-    def _init(self) -> None:
-        self._ready = asyncio.Event()
-
-    def _setup_logging(self, verbose: bool, *, welcome_message: bool = True) -> None:
-        """Use the logging from sr-robot3."""
-        # Suppress INFO messages from gmqtt
-        logging.getLogger("gmqtt").setLevel(logging.WARNING)
-
-    @property
-    def name(self) -> str:
-        """
-        MQTT client name of the data component.
-
-        This should be unique, as clashes will cause unexpected disconnections.
-        """
-        return f"sr-robot3-kchd-{uuid4()}"
-
-    async def main(self) -> None:
-        """Main method of the command."""
-        self._ready.set()
-        await self.wait_loop()
-
-
-class KCHLEDUpdateManagerRequest(ManagerRequest):
-    """A request to change the controllable LEDs."""
-
-    start: bool = False
-    a: Tuple[bool, bool, bool] = (False, False, False)
-    b: Tuple[bool, bool, bool] = (False, False, False)
-    c: Tuple[bool, bool, bool] = (False, False, False)
-
-
-class SRKCHDaemonBackend(RGBLEDInterface, Backend):
-    """KCH Daemon Backend."""
-
-    board = KCHBoard
+    def all_leds(cls) -> List[int]:
+        """Get all LEDs."""
+        return [c.value for c in cls]
 
     @classmethod
-    def discover(cls) -> Set[Board]:
-        """
-        Discover boards that this backend can control.
+    def user_leds(cls) -> List[Tuple[int, int, int]]:
+        """Get the user programmable LEDs."""
+        return [
+            (cls.USER_A_RED, cls.USER_A_GREEN, cls.USER_A_BLUE),
+            (cls.USER_B_RED, cls.USER_B_GREEN, cls.USER_B_BLUE),
+            (cls.USER_C_RED, cls.USER_C_GREEN, cls.USER_C_BLUE),
+        ]
 
-        :returns: set of boards that this backend can control.
-        """
-        info = KCHDaemonConsumer.get_kch()
-        if info:
-            board = KCHBoard(info, cls())
-            return {cast(Board, board)}
-        else:
-            return set()
+
+@unique
+class UserLED(IntEnum):
+    """User Programmable LEDs."""
+
+    A = 0
+    B = 1
+    C = 2
+
+
+class Colour():
+    """User LED colours."""
+
+    OFF = (False, False, False)
+    RED = (True, False, False)
+    YELLOW = (True, True, False)
+    GREEN = (False, True, False)
+    CYAN = (False, True, True)
+    BLUE = (False, False, True)
+    MAGENTA = (True, False, True)
+    WHITE = (True, True, True)
+
+
+class KCH:
+    """KCH Board."""
 
     def __init__(self) -> None:
-        self._start = False
-        self._leds = {
-            i: [False, False, False]
-            for i in range(3)
-        }
+        if HAS_HAT:
+            GPIO.setmode(GPIO.BCM)
+            with catch_warnings():
+                # If this is not the first time the code is run this init will
+                # cause a warning as the gpio are alrady initilized, we can
+                # suppress this as we know the reason behind the warning
+                GPIO.setup(RobotLEDs.all_leds(), GPIO.OUT, initial=GPIO.LOW)
+        self._leds = LEDs(RobotLEDs.user_leds())
 
-        self._kchdc = KCHDaemonControlConsumer(False, None)
-        try:
-            asyncio.ensure_future(self._kchdc.run())
-        except ConnectionRefusedError:
-            LOGGER.warning("Unable to connect to MQTT broker")
-        except asyncio.TimeoutError:
-            LOGGER.warning("KCH Daemon took too long to respond, giving up.")
+    def __del__(self) -> None:
+        # We are not running cleanup so the LED state persits after the code completes,
+        # this will cause a warning with `GPIO.setup()` which we can suppress
+        if HAS_HAT:
+            # GPIO.cleanup()
+            pass
 
-    async def _set_leds(self) -> None:
-        try:
-            await asyncio.wait_for(self._kchdc._ready.wait(), timeout=1.0)
-        except asyncio.TimeoutError:
-            LOGGER.error("Failed to set LED on KCH")
-            return
-        if not self._kchdc._mqtt.is_connected:
-            try:
-                # Suppress logging while we reconnect
-                logging.disable(logging.ERROR)
-                await self._kchdc._mqtt.connect()
-            finally:
-                logging.disable(logging.NOTSET)
-        await self._kchdc._mqtt.manager_request(
-            "kchd",
-            "user_leds",
-            KCHLEDUpdateManagerRequest(
-                sender_name=self._kchdc.name,
-                start=self._start,
-                a=self._leds[0],
-                b=self._leds[1],
-                c=self._leds[2],
-            ),
-        )
+    @property
+    def start(self) -> bool:
+        """Get the state of the start LED."""
+        return GPIO.input(RobotLEDs.START) if HAS_HAT else False
 
-    def _channel_to_index(self, channel: RGBColour) -> int:
-        return {
-            RGBColour.RED: 0,
-            RGBColour.GREEN: 1,
-            RGBColour.BLUE: 2,
-        }[channel]
+    @start.setter
+    def start(self, value: bool) -> None:
+        """Set the state of the start LED."""
+        if HAS_HAT:
+            GPIO.output(RobotLEDs.START, GPIO.HIGH if value else GPIO.LOW)
 
-    def _update_leds(self) -> None:
-        """Update the LEDs."""
-        loop.run_until_complete(self._set_leds())
+    @property
+    def leds(self) -> 'LEDs':
+        """User programmable LEDs."""
+        return self._leds
 
-    def get_rgb_led_channel_duty_cycle(
-        self,
-        identifier: int,
-        channel: RGBColour,
-    ) -> float:
+
+class LEDs:
+    """Programmable LEDs controller."""
+
+    def __init__(self, leds: List[Tuple[int, int, int]]):
+        self._leds = leds
+
+    def __setitem__(self, key: Union[int, slice], value: Tuple[bool, bool, bool]) -> None:
         """
-        Get the duty cycle of a channel on the LED.
+        Set the colour of a user LED.
 
-        :param identifier: identifier of the RGB LED.
-        :param channel: channel to get the duty cycle for.
-        :returns: current duty cycle of the LED.
+        :param key: The index of the RGB LED to set.
+        :param value: A 3-tuple of the subpixel values as bools.
+        :returns: None.
+        :raises ValueError: value wasn't a tuple with 3 elements.
+        :raises IndexError: An index outside range(3) was requested.
         """
-        return 1.0 if self._leds[identifier][self._channel_to_index(channel)] else 0
+        rgb_leds = []
+        if isinstance(key, slice):
+            rgb_leds = self._leds[key]
+        elif isinstance(key, int):
+            rgb_leds = [self._leds[key]]
 
-    def set_rgb_led_channel_duty_cycle(
-        self,
-        identifier: int,
-        channel: RGBColour,
-        duty_cycle: float,
-    ) -> None:
-        """
-        Set the duty cycle of a channel on the LED.
+        if not isinstance(value, (tuple, list)) or len(value) != 3:
+            raise ValueError("The LED requires 3 values for it's colour")
 
-        :param identifier: identifier of the RGB LED.
-        :param channel: channel to set the duty cycle of.
-        :param duty_cycle: desired duty cycle of the LED.
+        if HAS_HAT:
+            for rgb_led in rgb_leds:
+                for led, state in zip(rgb_led, value):
+                    GPIO.output(led, GPIO.HIGH if state else GPIO.LOW)
+
+    def __getitem__(self, key: Union[int, slice]) -> Union['LED', List['LED']]:
         """
-        self._leds[identifier][self._channel_to_index(channel)] = bool(duty_cycle)
-        self._update_leds()
+        Get the colour of a user LED.
+
+        :param key: The index of the RGB LED to get the colour of.
+        :returns: A 3-tuple of the subpixel values as bools.
+        :raises IndexError: An index outside range(3) was requested.
+        """
+        if isinstance(key, slice):
+            return [LED(led) for led in self._leds[key]]
+        elif isinstance(key, int):
+            return LED(self._leds[key])
+
+    def __len__(self) -> int:
+        return len(self._leds)
+
+
+class LED:
+    """User programmable LED."""
+
+    def __init__(self, led: Tuple[int, int, int]):
+        self._led = led
+
+    @property
+    def r(self) -> bool:
+        """Get the state of the Red LED segment."""
+        return GPIO.input(self._led[0]) if HAS_HAT else False
+
+    @r.setter
+    def r(self, value: bool) -> None:
+        """Set the state of the Red LED segment."""
+        if HAS_HAT:
+            GPIO.output(self._led[0], GPIO.HIGH if value else GPIO.LOW)
+
+    @property
+    def g(self) -> bool:
+        """Get the state of the Green LED segment."""
+        return GPIO.input(self._led[1]) if HAS_HAT else False
+
+    @g.setter
+    def g(self, value: bool) -> None:
+        """Set the state of the Green LED segment."""
+        if HAS_HAT:
+            GPIO.output(self._led[1], GPIO.HIGH if value else GPIO.LOW)
+
+    @property
+    def b(self) -> bool:
+        """Get the state of the Blue LED segment."""
+        return GPIO.input(self._led[2]) if HAS_HAT else False
+
+    @b.setter
+    def b(self, value: bool) -> None:
+        """Set the state of the Blue LED segment."""
+        if HAS_HAT:
+            GPIO.output(self._led[2], GPIO.HIGH if value else GPIO.LOW)

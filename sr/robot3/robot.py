@@ -12,7 +12,6 @@ from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
 from j5.backends import Backend
 from j5.boards import Board, BoardGroup
-from j5.boards.sr import KCHBoard
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, Ruggeduino, ServoBoard
 from j5.components.piezo import Note
 from j5_zoloto import ZolotoCameraBoard, ZolotoHardwareBackend
@@ -21,10 +20,11 @@ from zoloto.cameras.camera import find_camera_ids
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
+from .kch import KCH
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
-__version__ = "2023.0.1"
+__version__ = "2023.0.2"
 
 
 LOGGER = logging.getLogger(__name__)
@@ -136,7 +136,7 @@ class Robot(BaseRobot):
 
     def _init_auxilliary_boards(self) -> None:
         """Find and initialise auxilliary boards."""
-        self._kch_boards = self._environment.get_board_group(KCHBoard)
+        self._kch = KCH()
         self._motor_boards = self._environment.get_board_group(MotorBoard)
         self._servo_boards = self._environment.get_board_group(ServoBoard)
 
@@ -193,14 +193,13 @@ class Robot(BaseRobot):
         return self._cameras.singular()
 
     @property
-    def kch(self) -> KCHBoard:
+    def kch(self) -> KCH:
         """
         Get the KCH.
 
-        :returns: a :class:`j5.boards.sr.KCHBoard`.
-        :raises j5.backends.CommunicationError: there isn't exactly one KCH attached.
+        :returns: a :class:`KCH`.
         """
-        return self._kch_boards.singular()
+        return self._kch
 
     @property
     def motor_boards(self) -> BoardGroup[MotorBoard, Backend]:
@@ -358,8 +357,7 @@ class Robot(BaseRobot):
                 if counter % 6 == 0:
                     led_state = not led_state
                     self.power_board._run_led.state = led_state
-                    self.kch._backend._start = led_state  # type: ignore[attr-defined]
-                    await self.kch._backend._set_leds()  # type: ignore[attr-defined]
+                    self.kch.start = led_state
                 await asyncio.sleep(0.05)
                 counter += 1
             start_event.set()
@@ -367,8 +365,7 @@ class Robot(BaseRobot):
             self.power_board._run_led.state = True
 
             # Turn off the KCH Start LED.
-            self.kch._backend._start = False  # type: ignore[attr-defined]
-            await self.kch._backend._set_leds()  # type: ignore[attr-defined]
+            self.kch.start = False
 
         loop.run_until_complete(
             asyncio.gather(

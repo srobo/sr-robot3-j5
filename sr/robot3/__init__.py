@@ -6,6 +6,7 @@ from j5.components.gpio_pin import GPIOPinMode
 from j5.components.motor import MotorSpecialState
 from j5.components.piezo import Note
 
+from .kch import Colour, UserLED
 from .logging import logger_setup
 from .robot import Robot, __version__
 
@@ -52,6 +53,7 @@ __all__ = [
     "BRAKE",
     "COAST",
     "COMP",
+    "Colour",
     "DEV",
     "INPUT",
     "INPUT_PULLDOWN",
@@ -66,5 +68,6 @@ __all__ = [
     "OUT_L3",
     "PWM_OUTPUT",
     "Robot",
+    "UserLED",
     "__version__",
 ]
