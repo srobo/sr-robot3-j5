@@ -83,7 +83,9 @@ class KCH:
         # this will cause a warning with `GPIO.setup()` which we can suppress
         if HAS_HAT:
             # GPIO.cleanup()
-            pass
+
+            # Turn off start LED when the code exits
+            GPIO.cleanup(RobotLEDs.START)
 
     @property
     def start(self) -> bool:
