@@ -24,7 +24,7 @@ from .kch import KCH
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
-__version__ = "2023.0.3"
+__version__ = "2023.0.4"
 
 
 LOGGER = logging.getLogger(__name__)
