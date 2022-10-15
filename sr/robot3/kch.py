@@ -1,7 +1,7 @@
 """KCH Driver."""
+import warnings
 from enum import IntEnum, unique
 from typing import List, Tuple, Union
-from warnings import catch_warnings
 
 try:
     import RPi.GPIO as GPIO  # isort: ignore
@@ -69,7 +69,9 @@ class KCH:
     def __init__(self) -> None:
         if HAS_HAT:
             GPIO.setmode(GPIO.BCM)
-            with catch_warnings():
+            with warnings.catch_warnings():
+                warnings.simplefilter("ignore")
+
                 # If this is not the first time the code is run this init will
                 # cause a warning as the gpio are alrady initilized, we can
                 # suppress this as we know the reason behind the warning
