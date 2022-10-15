@@ -33,7 +33,7 @@ class RobotLEDs(IntEnum):
 
     @classmethod
     def user_leds(cls) -> List[Tuple[int, int, int]]:
-        """Get the user prorammable LEDs."""
+        """Get the user programmable LEDs."""
         return [
             (cls.USER_A_RED, cls.USER_A_GREEN, cls.USER_A_BLUE),
             (cls.USER_B_RED, cls.USER_B_GREEN, cls.USER_B_BLUE),
