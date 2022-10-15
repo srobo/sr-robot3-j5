@@ -85,7 +85,8 @@ class KCH:
             # atexit.register(GPIO.cleanup)
 
             # Cleanup just the start LED to turn it off when the code exits
-            atexit.register(GPIO.cleanup, RobotLEDs.START)
+            # Mypy isn't aware of the version of atexit.register(func, *args)
+            atexit.register(GPIO.cleanup, RobotLEDs.START)  # type: ignore[call-arg]
 
     @property
     def start(self) -> bool:
