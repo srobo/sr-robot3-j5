@@ -85,7 +85,7 @@ class SRZolotoCamera(Camera):
         """
         Get the size of a marker given it's ID.
 
-        :param marker_id: The offical ID number of the marker.
+        :param marker_id: The official ID number of the marker.
         :returns: The size of the marker in millimetres.
         """
         return get_marker_size(marker_id)

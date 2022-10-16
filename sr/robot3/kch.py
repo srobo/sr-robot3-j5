@@ -74,12 +74,12 @@ class KCH:
                 warnings.simplefilter("ignore")
 
                 # If this is not the first time the code is run this init will
-                # cause a warning as the gpio are alrady initilized, we can
+                # cause a warning as the gpio are already initialized, we can
                 # suppress this as we know the reason behind the warning
                 GPIO.setup(RobotLEDs.all_leds(), GPIO.OUT, initial=GPIO.LOW)
         self._leds = LEDs(RobotLEDs.user_leds())
 
-        # We are not running cleanup so the LED state persits after the code completes,
+        # We are not running cleanup so the LED state persists after the code completes,
         # this will cause a warning with `GPIO.setup()` which we can suppress
         if HAS_HAT:
             # atexit.register(GPIO.cleanup)

@@ -84,7 +84,7 @@ class Robot(BaseRobot):
 
         self._init_cameras(self.metadata.marker_offset)
         self._init_power_board()
-        self._init_auxilliary_boards()
+        self._init_auxiliary_boards()
 
         self._init_ruggeduinos()
 
@@ -134,8 +134,8 @@ class Robot(BaseRobot):
         # Power on robot, so that we can find other boards.
         self.power_board.outputs.power_on()
 
-    def _init_auxilliary_boards(self) -> None:
-        """Find and initialise auxilliary boards."""
+    def _init_auxiliary_boards(self) -> None:
+        """Find and initialise auxiliary boards."""
         self._kch = KCH()
         self._motor_boards = self._environment.get_board_group(MotorBoard)
         self._servo_boards = self._environment.get_board_group(ServoBoard)
