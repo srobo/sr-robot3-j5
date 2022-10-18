@@ -560,10 +560,13 @@ cli = ["pillow", "tqdm"]
 opencv = ["opencv-contrib-python (>=4.0,<4.6)"]
 rpi = ["picamera[array] (>=1.13)"]
 
+[extras]
+kch = ["RPi.GPIO"]
+
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "37459f25147250a9b701029105b914561f3f3ccb91ab25ab84c75e3398a21647"
+content-hash = "afcda1661eda0b63d4a3b5c084265934bbb37941a8339014a15982b9df6aeaaa"
 
 [metadata.files]
 astoria = [
