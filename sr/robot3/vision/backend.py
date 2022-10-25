@@ -10,6 +10,7 @@ import logging
 from pathlib import Path
 from typing import List, Optional, Tuple
 
+from cv2 import aruco_DetectorParameters
 from j5_zoloto import ZolotoHardwareBackend
 from numpy.typing import NDArray
 from zoloto.calibration import parse_calibration_file
@@ -89,6 +90,15 @@ class SRZolotoCamera(Camera):
         :returns: The size of the marker in millimetres.
         """
         return get_marker_size(marker_id)
+
+    def get_detector_params(self) -> aruco_DetectorParameters:
+        """Modify ArUco detector parameters to suit our needs."""
+        parameters = super().get_detector_params()
+
+        # Prevent border contour superseding the marker's edge and preventing detection
+        parameters.minMarkerDistanceRate = 0.035
+
+        return parameters
 
 
 class SRZolotoHardwareBackend(ZolotoHardwareBackend):
