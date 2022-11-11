@@ -331,6 +331,16 @@ class Robot(BaseRobot):
         LOGGER.info(f"SSID: {self.metadata.wifi_ssid}")
         LOGGER.info(f"Password: {self.metadata.wifi_psk}")
 
+    def sleep(self, secs: float) -> None:
+        """
+        Wait for the specified amount of time.
+
+        This exists for compatibility with the simulator API only.
+
+        :param secs: the number of seconds to wait for.
+        """
+        return time.sleep(secs)
+
     def time(self) -> float:
         """
         Get the number of seconds since the Unix Epoch.
