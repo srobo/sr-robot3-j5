@@ -6,6 +6,11 @@ from unittest.mock import patch
 from sr.robot3 import Robot
 
 
+def test_is_simulated(robot: Robot) -> None:
+    """Test that the is_simulated property works."""
+    assert robot.is_simulated is False
+
+
 def test_time(robot: Robot) -> None:
     """Test that the time function works."""
     assert math.isclose(robot.time(), time.time())

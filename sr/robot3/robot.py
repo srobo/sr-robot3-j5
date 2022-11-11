@@ -322,6 +322,15 @@ class Robot(BaseRobot):
         """
         return self.metadata.zone
 
+    @property
+    def is_simulated(self) -> bool:
+        """
+        Determine whether the robot is simulated.
+
+        :returns: True if the robot is simulated. False otherwise.
+        """
+        return False
+
     def print_wifi_details(self) -> None:
         """Prints the current WiFi details stored in robot-settings.toml."""
         if not self.metadata.wifi_enabled:
