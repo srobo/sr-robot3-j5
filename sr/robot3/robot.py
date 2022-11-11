@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import os
+import time
 from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Type
@@ -329,6 +330,16 @@ class Robot(BaseRobot):
         LOGGER.info("WiFi credentials:")
         LOGGER.info(f"SSID: {self.metadata.wifi_ssid}")
         LOGGER.info(f"Password: {self.metadata.wifi_psk}")
+
+    def time(self) -> float:
+        """
+        Get the number of seconds since the Unix Epoch.
+
+        This exists for compatibility with the simulator API only.
+
+        :returns: the number of seconds since the Unix Epoch.
+        """
+        return time.time()
 
     def wait_start(self) -> None:
         """
