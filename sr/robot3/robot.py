@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import os
+import time
 from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Type
@@ -321,6 +322,15 @@ class Robot(BaseRobot):
         """
         return self.metadata.zone
 
+    @property
+    def is_simulated(self) -> bool:
+        """
+        Determine whether the robot is simulated.
+
+        :returns: True if the robot is simulated. False otherwise.
+        """
+        return False
+
     def print_wifi_details(self) -> None:
         """Prints the current WiFi details stored in robot-settings.toml."""
         if not self.metadata.wifi_enabled:
@@ -329,6 +339,26 @@ class Robot(BaseRobot):
         LOGGER.info("WiFi credentials:")
         LOGGER.info(f"SSID: {self.metadata.wifi_ssid}")
         LOGGER.info(f"Password: {self.metadata.wifi_psk}")
+
+    def sleep(self, secs: float) -> None:
+        """
+        Wait for the specified amount of time.
+
+        This exists for compatibility with the simulator API only.
+
+        :param secs: the number of seconds to wait for.
+        """
+        return time.sleep(secs)
+
+    def time(self) -> float:
+        """
+        Get the number of seconds since the Unix Epoch.
+
+        This exists for compatibility with the simulator API only.
+
+        :returns: the number of seconds since the Unix Epoch.
+        """
+        return time.time()
 
     def wait_start(self) -> None:
         """
