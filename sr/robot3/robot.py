@@ -1,8 +1,8 @@
 """sr.robot3 Robot class."""
 
-import asyncio
 import logging
 import os
+import threading
 import time
 from datetime import timedelta
 from pathlib import Path
@@ -22,6 +22,7 @@ from zoloto.cameras.camera import find_camera_ids
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 from .kch import KCH
+from .mqtt import init_mqtt
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
@@ -29,8 +30,6 @@ __version__ = "2023.0.5"
 
 
 LOGGER = logging.getLogger(__name__)
-
-loop = asyncio.get_event_loop()
 
 
 class Robot(BaseRobot):
@@ -80,6 +79,8 @@ class Robot(BaseRobot):
         LOGGER.debug(f"sr.robot3 version {__version__}")
         LOGGER.debug(f"j5 version {j5_version}")
         LOGGER.debug(f"Environment: {self._environment.name}")
+
+        self._mqtt = init_mqtt()
 
         self._init_metadata()
 
@@ -169,7 +170,9 @@ class Robot(BaseRobot):
 
     def _init_metadata(self) -> None:
         """Fetch metadata from Astoria."""
-        self._metadata, self._code_path = GetMetadataConsumer.get_metadata()
+        (
+            self._metadata, self._code_path,
+        ) = GetMetadataConsumer.get_metadata(self._mqtt)
         offset = self._metadata.marker_offset
         if hasattr(self, '_cameras'):
             for camera in self._cameras:
@@ -370,39 +373,36 @@ class Robot(BaseRobot):
         """
         LOGGER.info("Waiting for start signal")
 
-        start_event = asyncio.Event()
+        start_event = threading.Event()
 
         astoria_start = WaitForStartButtonBroadcastConsumer(
-            self._verbose,
-            None,  # Don't pass a config
+            self._mqtt,
             start_event,
         )
 
-        async def wait_for_physical_start() -> None:
-            self.power_board.piezo.buzz(timedelta(seconds=0.1), Note.A6)
-            counter = 0
-            led_state = False
-            _ = self.power_board.start_button.is_pressed
-            while not self.power_board.start_button.is_pressed and not start_event.is_set():  # noqa: E501
-                if counter % 6 == 0:
-                    led_state = not led_state
-                    self.power_board._run_led.state = led_state
-                    self.kch.start = led_state
-                await asyncio.sleep(0.05)
-                counter += 1
-            start_event.set()
-            # Turn on the LED now that we are starting
-            self.power_board._run_led.state = True
+        self.power_board.piezo.buzz(timedelta(seconds=0.1), Note.A6)
+        counter = 0
+        led_state = False
+        _ = self.power_board.start_button.is_pressed
+        while (
+            not self.power_board.start_button.is_pressed
+            and not start_event.is_set()
+        ):
+            if counter % 6 == 0:
+                led_state = not led_state
+                self.power_board._run_led.state = led_state
+                self.kch.start = led_state
+            time.sleep(0.05)
+            counter += 1
 
-            # Turn off the KCH Start LED.
-            self.kch.start = False
+        # Tidy up wait start subscriptions
+        astoria_start.close()
 
-        loop.run_until_complete(
-            asyncio.gather(
-                astoria_start.run(),
-                wait_for_physical_start(),
-            ),
-        )
+        # Turn on the LED now that we are starting
+        self.power_board._run_led.state = True
+
+        # Turn off the KCH Start LED.
+        self.kch.start = False
 
         # Reload metadata as a metadata USB may have been inserted.
         # This ensures that the game timeout is observed even if the metadata
