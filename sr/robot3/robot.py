@@ -385,7 +385,7 @@ class Robot(BaseRobot):
         led_state = False
         _ = self.power_board.start_button.is_pressed
         while not self.power_board.start_button.is_pressed and \
-            not start_event.is_set():
+                not start_event.is_set():
             if counter % 6 == 0:
                 led_state = not led_state
                 self.power_board._run_led.state = led_state

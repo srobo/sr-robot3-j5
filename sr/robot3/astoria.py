@@ -17,7 +17,7 @@ from astoria.common.ipc import (
 from astoria.common.metadata import Metadata
 from paho.mqtt.client import Client as MQTT
 from paho.mqtt.client import MQTTMessage
-from pydantic import parse_obj_as
+from pydantic import ValidationError, parse_obj_as
 
 from .mqtt import MQTTClient
 
@@ -80,9 +80,8 @@ class GetMetadataConsumer:
                 LOGGER.warn("Cannot get metadata, astmetad is not running")
         except JSONDecodeError:
             LOGGER.error("Could not decode JSON metadata.")
-        except pydantic.ValidationError as e:
+        except ValidationError as e:
             LOGGER.error(f"Unable to parse metadata message: {e}")
-            
 
     def _handle_astprocd_message(
         self,
@@ -101,9 +100,8 @@ class GetMetadataConsumer:
                 LOGGER.warn("Cannot get process info, astprocd is not running")
         except JSONDecodeError:
             LOGGER.error("Could not decode JSON metadata.")
-        except pydantic.ValidationError as e:
+        except ValidationError as e:
             LOGGER.error(f"Unable to parse process message: {e}")
-            
 
     @classmethod
     def get_metadata(cls, mqtt_client: MQTTClient) -> GetMetadataResult:

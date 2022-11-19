@@ -46,7 +46,7 @@ class MQTTClient:
         self._client_name = client_name
 
         self._client = mqtt.Client(client_id=client_name, protocol=mqtt_version)
-        self._client.on_connect = self.__on_connect
+        self._client.on_connect = self._on_connect
 
     def connect(self, host: str, port: int) -> None:
         """
@@ -136,7 +136,7 @@ class MQTTClient:
         except ValueError:
             raise ValueError(f"Cannot publish to MQTT topic: {topic}")
 
-    def __on_connect(
+    def _on_connect(
         self, mqttc: mqtt.Client, obj: Any, flags: Dict[str, int], rc: int,
     ) -> None:
         """Callback run each time the client connects to the broker."""
