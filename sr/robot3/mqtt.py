@@ -54,7 +54,15 @@ class MQTTClient:
 
         Registers an atexit routine that tears down the client.
         """
-        self._client.connect(host, port, keepalive=60)
+        if self._client.is_connected():
+            LOGGER.error("Attempting connection, but client is already connected.")
+            return
+
+        try:
+            self._client.connect(host, port, keepalive=60)
+        except (TimeoutError, ValueError):
+            LOGGER.error(f"Failed to connect to MQTT broker at {host}:{port}")
+            return
         self._client.loop_start()
         atexit.register(self.disconnect)
 
@@ -115,9 +123,18 @@ class MQTTClient:
         auto_prefix_topic: bool = True,
     ) -> None:
         """Publish a message to the broker."""
+        if not self._client.is_connected():
+            LOGGER.error(
+                "Attempted to publish message, but client is not connected.",
+            )
+            return
+
         if auto_prefix_topic and self.topic_prefix:
             topic = f"{self.topic_prefix}/{topic}"
-        self._client.publish(topic, payload=payload, retain=retain, qos=1)
+        try:
+            self._client.publish(topic, payload=payload, retain=retain, qos=1)
+        except ValueError:
+            raise ValueError(f"Cannot publish to MQTT topic: {topic}")
 
     def __on_connect(
         self, mqttc: mqtt.Client, obj: Any, flags: Dict[str, int], rc: int,
