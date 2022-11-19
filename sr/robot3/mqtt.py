@@ -60,7 +60,7 @@ class MQTTClient:
 
         try:
             self._client.connect(host, port, keepalive=60)
-        except (TimeoutError, ValueError):
+        except (TimeoutError, ValueError, ConnectionRefusedError):
             LOGGER.error(f"Failed to connect to MQTT broker at {host}:{port}")
             return
         self._client.loop_start()
