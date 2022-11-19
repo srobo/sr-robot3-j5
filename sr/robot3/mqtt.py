@@ -103,7 +103,7 @@ class MQTTClient:
     ) -> None:
         LOGGER.debug(f"Subscribing to {topic}")
         self._client.message_callback_add(topic, callback)
-        self._client.subscribe(topic, 1)
+        self._client.subscribe(topic, qos=1)
 
     def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from a topic."""

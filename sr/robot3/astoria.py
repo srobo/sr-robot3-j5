@@ -31,7 +31,7 @@ class GetMetadataResult(NamedTuple):
     usb_path: Path
 
 
-class GetMetadataConsumer():
+class GetMetadataConsumer:
     """MQTT consumer to fetch metadata."""
 
     name = "sr-robot3-metadata"
@@ -75,12 +75,14 @@ class GetMetadataConsumer():
             if message.status == MetadataManagerMessage.Status.RUNNING:
                 LOGGER.debug("Received metadata")
                 self._metadata_message = message
+                self._astmetad_received.set()
             else:
                 LOGGER.warn("Cannot get metadata, astmetad is not running")
         except JSONDecodeError:
             LOGGER.error("Could not decode JSON metadata.")
-        if self._metadata_message is not None:
-            self._astmetad_received.set()
+        except pydantic.ValidationError as e:
+            LOGGER.error(f"Unable to parse metadata message: {e}")
+            
 
     def _handle_astprocd_message(
         self,
@@ -94,12 +96,14 @@ class GetMetadataConsumer():
             if message.status == ProcessManagerMessage.Status.RUNNING:
                 LOGGER.debug("Received process info")
                 self._proc_message = message
+                self._astprocd_received.set()
             else:
                 LOGGER.warn("Cannot get process info, astprocd is not running")
         except JSONDecodeError:
             LOGGER.error("Could not decode JSON metadata.")
-        if self._proc_message is not None:
-            self._astprocd_received.set()
+        except pydantic.ValidationError as e:
+            LOGGER.error(f"Unable to parse process message: {e}")
+            
 
     @classmethod
     def get_metadata(cls, mqtt_client: MQTTClient) -> GetMetadataResult:
@@ -116,10 +120,7 @@ class GetMetadataConsumer():
                 if gmc._metadata_message is not None:
                     metadata = gmc._metadata_message.metadata
 
-                if (
-                    gmc._proc_message is not None
-                    and gmc._proc_message.disk_info is not None
-                ):
+                if gmc._proc_message and gmc._proc_message.disk_info:
                     path = gmc._proc_message.disk_info.mount_path
             else:
                 LOGGER.warning("Astoria took too long to respond, giving up.")

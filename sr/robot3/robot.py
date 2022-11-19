@@ -170,9 +170,9 @@ class Robot(BaseRobot):
 
     def _init_metadata(self) -> None:
         """Fetch metadata from Astoria."""
-        (
-            self._metadata, self._code_path,
-        ) = GetMetadataConsumer.get_metadata(self._mqtt)
+        self._metadata, self._code_path = GetMetadataConsumer.get_metadata(
+            self._mqtt,
+        )
         offset = self._metadata.marker_offset
         if hasattr(self, '_cameras'):
             for camera in self._cameras:
@@ -384,10 +384,8 @@ class Robot(BaseRobot):
         counter = 0
         led_state = False
         _ = self.power_board.start_button.is_pressed
-        while (
-            not self.power_board.start_button.is_pressed
-            and not start_event.is_set()
-        ):
+        while not self.power_board.start_button.is_pressed and \
+            not start_event.is_set():
             if counter % 6 == 0:
                 led_state = not led_state
                 self.power_board._run_led.state = led_state
