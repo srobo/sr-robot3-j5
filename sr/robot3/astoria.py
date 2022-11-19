@@ -47,10 +47,8 @@ class GetMetadataConsumer():
 
     def run(self, timeout: Optional[float] = None) -> bool:
         """Entrypoint for the data component."""
-        self._mqtt.subscribe(
-            f"{self.name}/astmetad", self._handle_astmetad_message)
-        self._mqtt.subscribe(
-            f"{self.name}/astprocd", self._handle_astprocd_message)
+        self._mqtt.subscribe("astmetad", self._handle_astmetad_message)
+        self._mqtt.subscribe("astprocd", self._handle_astprocd_message)
 
         timeout_step = (timeout / 2) if timeout is not None else None
 
@@ -58,12 +56,12 @@ class GetMetadataConsumer():
         # the division of time between each step is irrelevant,
         # messages can arrive for either during the whole period
         self._astmetad_received.wait(timeout=timeout_step)
-        timed_out = self._astprocd_received.wait(timeout=timeout_step)
+        metadata_received = self._astprocd_received.wait(timeout=timeout_step)
 
-        self._mqtt.unsubscribe(f"{self.name}/astmetad")
-        self._mqtt.unsubscribe(f"{self.name}/astprocd")
+        self._mqtt.unsubscribe("astmetad")
+        self._mqtt.unsubscribe("astprocd")
 
-        return timed_out
+        return metadata_received
 
     def _handle_astmetad_message(
         self,
@@ -113,8 +111,8 @@ class GetMetadataConsumer():
         path = Path("/dev/null")
 
         try:
-            timed_out = gmc.run(timeout=0.1)
-            if not timed_out:
+            metadata_received = gmc.run(timeout=0.1)
+            if metadata_received:
                 if gmc._metadata_message is not None:
                     metadata = gmc._metadata_message.metadata
 
@@ -189,7 +187,7 @@ class BroadcastHelper(Generic[T]):
         cls, mqtt: 'MQTTClient', schema: Type[T], message_event: Optional[Event] = None,
     ) -> 'BroadcastHelper[T]':
         """Get the broadcast helper for a given event."""
-        return BroadcastHelper[T](mqtt, schema.name, schema)
+        return BroadcastHelper[T](mqtt, schema.name, schema, message_event)
 
     def _handle_broadcast(
         self,
