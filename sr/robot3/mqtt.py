@@ -95,7 +95,7 @@ class MQTTClient:
     ) -> None:
         LOGGER.debug(f"Subscribing to {topic}")
         self._client.message_callback_add(topic, callback)
-        self._client.subscribe(topic)
+        self._client.subscribe(topic, 1)
 
     def unsubscribe(self, topic: str) -> None:
         """Unsubscribe from a topic."""
@@ -110,7 +110,7 @@ class MQTTClient:
         self, topic: str, payload: Union[bytes, str], retain: bool = False,
     ) -> None:
         """Publish a message to the broker."""
-        self._client.publish(topic, payload=payload, retain=retain)
+        self._client.publish(topic, payload=payload, retain=retain, qos=1)
 
     def __on_connect(
         self, mqttc: mqtt.Client, obj: Any, flags: Dict[str, int], rc: int,
