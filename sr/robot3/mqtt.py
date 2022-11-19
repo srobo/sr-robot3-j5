@@ -107,9 +107,16 @@ class MQTTClient:
         self._client.unsubscribe(topic)
 
     def publish(
-        self, topic: str, payload: Union[bytes, str], retain: bool = False,
+        self,
+        topic: str,
+        payload: Union[bytes, str],
+        retain: bool = False,
+        *,
+        auto_prefix_topic: bool = True,
     ) -> None:
         """Publish a message to the broker."""
+        if auto_prefix_topic and self.topic_prefix:
+            topic = f"{self.topic_prefix}/{topic}"
         self._client.publish(topic, payload=payload, retain=retain, qos=1)
 
     def __on_connect(
