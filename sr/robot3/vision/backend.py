@@ -98,6 +98,9 @@ class SRZolotoCamera(Camera):
         # Prevent border contour superseding the marker's edge and preventing detection
         parameters.minMarkerDistanceRate = 0.035
 
+        # Increase adaptive threshold window to improve detection in low light
+        parameters.adaptiveThreshWinSizeMax = 53
+
         return parameters
 
 
