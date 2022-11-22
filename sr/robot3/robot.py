@@ -48,6 +48,7 @@ class Robot(BaseRobot):
             verbose: bool = False,
             env: Environment = HARDWARE_ENVIRONMENT,
             ignored_ruggeduinos: Optional[List[str]] = None,
+            legacy_camera_axis: bool = True,
     ) -> None:
         """
         Initialise a Robot object.
@@ -59,6 +60,8 @@ class Robot(BaseRobot):
             Robot under. See :ref:`Environments` for more information.
         :param ignored_ruggeduinos: List of Ruggeduino serial numbers to ignore.
             See :ref:`Custom Ruggeduino Firmware` for more information.
+        :param legacy_camera_axis: Use the coordinate systems the camera used
+            prior to SR OS 2023.2.0.
         """
         self._auto_start = auto_start
         self._verbose = verbose
@@ -85,6 +88,8 @@ class Robot(BaseRobot):
         self._init_metadata()
 
         self._init_cameras(self.metadata.marker_offset)
+        if legacy_camera_axis:
+            os.environ['ZOLOTO_LEGACY_AXIS'] = '1'
         self._init_power_board()
         self._init_auxiliary_boards()
 
