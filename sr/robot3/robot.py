@@ -61,7 +61,7 @@ class Robot(BaseRobot):
         :param ignored_ruggeduinos: List of Ruggeduino serial numbers to ignore.
             See :ref:`Custom Ruggeduino Firmware` for more information.
         :param legacy_camera_axis: Use the coordinate systems the camera used
-            prior to SR OS 2023.2.0.
+            prior to SR OS 2023.1.0.
         """
         self._auto_start = auto_start
         self._verbose = verbose
