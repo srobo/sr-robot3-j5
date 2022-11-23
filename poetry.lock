@@ -34,7 +34,7 @@ python-versions = ">=3.5"
 dev = ["cloudpickle", "coverage[toml] (>=5.0.2)", "furo", "hypothesis", "mypy (>=0.900,!=0.940)", "pre-commit", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "sphinx", "sphinx-notfound-page", "zope.interface"]
 docs = ["furo", "sphinx", "sphinx-notfound-page", "zope.interface"]
 tests = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "zope.interface"]
-tests_no_zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
+tests-no-zope = ["cloudpickle", "coverage[toml] (>=5.0.2)", "hypothesis", "mypy (>=0.900,!=0.940)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins"]
 
 [[package]]
 name = "cached-property"
@@ -98,28 +98,31 @@ test = ["pytest (>=6)"]
 
 [[package]]
 name = "flake8"
-version = "2.5.5"
-description = "the modular source code checker: pep8, pyflakes and co"
+version = "5.0.4"
+description = "the modular source code checker: pep8 pyflakes and co"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6.1"
 
 [package.dependencies]
-mccabe = ">=0.2.1,<0.5"
-pep8 = ">=1.5.7,<1.6.0 || >1.6.0,<1.6.1 || >1.6.1,<1.6.2 || >1.6.2"
-pyflakes = ">=0.8.1,<1.1"
+mccabe = ">=0.7.0,<0.8.0"
+pycodestyle = ">=2.9.0,<2.10.0"
+pyflakes = ">=2.5.0,<2.6.0"
 
 [[package]]
 name = "flake8-bugbear"
-version = "16.7.0"
-description = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pep8."
+version = "22.10.27"
+description = "A plugin for flake8 finding likely bugs and design problems in your program. Contains warnings that don't belong in pyflakes and pycodestyle."
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 
 [package.dependencies]
-attrs = "*"
-flake8 = "*"
+attrs = ">=19.2.0"
+flake8 = ">=3.0.0"
+
+[package.extras]
+dev = ["coverage", "hypothesis", "hypothesmith (>=0.2)", "pre-commit", "tox"]
 
 [[package]]
 name = "flake8-builtins"
@@ -148,39 +151,37 @@ flake8 = ">=2"
 
 [[package]]
 name = "flake8-comprehensions"
-version = "2.3.0"
+version = "3.10.1"
 description = "A flake8 plugin to help you write better list/set/dict comprehensions."
 category = "dev"
 optional = false
-python-versions = ">=3.5"
+python-versions = ">=3.7"
 
 [package.dependencies]
-cached-property = ">=1.0.0,<2.0.0"
-flake8 = "!=3.2.0"
+flake8 = ">=3.0,<3.2.0 || >3.2.0"
 
 [[package]]
 name = "flake8-debugger"
-version = "3.2.1"
+version = "4.1.2"
 description = "ipdb/pdb statement checker plugin for flake8"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 
 [package.dependencies]
-flake8 = ">=1.5"
+flake8 = ">=3.0"
 pycodestyle = "*"
 
 [[package]]
 name = "flake8-docstrings"
-version = "1.3.1"
+version = "1.6.0"
 description = "Extension for flake8 which uses pydocstyle to check docstrings"
 category = "dev"
 optional = false
 python-versions = "*"
 
 [package.dependencies]
-flake8 = "*"
-flake8-polyfill = "*"
+flake8 = ">=3"
 pydocstyle = ">=2.1"
 
 [[package]]
@@ -210,28 +211,16 @@ python-versions = "*"
 flake8 = "*"
 
 [[package]]
-name = "flake8-polyfill"
-version = "1.0.2"
-description = "Polyfill package for Flake8 plugins"
-category = "dev"
-optional = false
-python-versions = "*"
-
-[package.dependencies]
-flake8 = "*"
-
-[[package]]
 name = "flake8-print"
-version = "3.1.4"
+version = "5.0.0"
 description = "print statement checker plugin for flake8"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.7"
 
 [package.dependencies]
-flake8 = ">=1.5"
+flake8 = ">=3.0"
 pycodestyle = "*"
-six = "*"
 
 [[package]]
 name = "flake8-todo"
@@ -273,9 +262,9 @@ python-versions = ">=3.6.1,<4.0"
 
 [package.extras]
 colors = ["colorama (>=0.4.3,<0.5.0)"]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
+pipfile-deprecated-finder = ["pipreqs", "requirementslib"]
 plugins = ["setuptools"]
-requirements_deprecated_finder = ["pip-api", "pipreqs"]
+requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
 name = "j5"
@@ -303,11 +292,11 @@ zoloto = ">=0.9.0,<0.10.0"
 
 [[package]]
 name = "mccabe"
-version = "0.4.0"
+version = "0.7.0"
 description = "McCabe checker, plugin for flake8"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 
 [[package]]
 name = "mypy"
@@ -364,15 +353,7 @@ optional = false
 python-versions = "*"
 
 [package.extras]
-proxy = ["pysocks"]
-
-[[package]]
-name = "pep8"
-version = "1.7.1"
-description = "Python style guide checker"
-category = "dev"
-optional = false
-python-versions = "*"
+proxy = ["PySocks"]
 
 [[package]]
 name = "pluggy"
@@ -388,7 +369,7 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "pycodestyle"
-version = "2.10.0"
+version = "2.9.1"
 description = "Python style guide checker"
 category = "dev"
 optional = false
@@ -425,11 +406,11 @@ toml = ["toml"]
 
 [[package]]
 name = "pyflakes"
-version = "1.0.0"
+version = "2.5.0"
 description = "passive checker of Python programs"
 category = "dev"
 optional = false
-python-versions = "*"
+python-versions = ">=3.6"
 
 [[package]]
 name = "pyparsing"
@@ -518,7 +499,7 @@ tomli = {version = ">=2.0", markers = "python_version < \"3.11\""}
 
 [package.extras]
 doc = ["sphinx (>=4.5.0)", "tabulate (>=0.8.9)"]
-gen_docs = ["pytoolconfig", "sphinx (>=4.5.0)", "sphinx-autodoc-typehints (>=1.18.1)", "sphinx-rtd-theme (>=1.0.0)"]
+gen-docs = ["pytoolconfig[doc]", "sphinx (>=4.5.0)", "sphinx-autodoc-typehints (>=1.18.1)", "sphinx-rtd-theme (>=1.0.0)"]
 global = ["appdirs (>=1.4.4)"]
 validation = ["pydantic (>=1.7.4)"]
 
@@ -543,23 +524,15 @@ pytoolconfig = {version = ">=1.2.2", extras = ["global"]}
 
 [package.extras]
 dev = ["build (>=0.7.0)", "pytest (>=7.0.1)", "pytest-timeout (>=2.1.0)"]
-doc = ["pytoolconfig", "sphinx (>=4.5.0)", "sphinx-autodoc-typehints (>=1.18.1)", "sphinx-rtd-theme (>=1.0.0)"]
+doc = ["pytoolconfig[doc]", "sphinx (>=4.5.0)", "sphinx-autodoc-typehints (>=1.18.1)", "sphinx-rtd-theme (>=1.0.0)"]
 
 [[package]]
-name = "rpi.gpio"
+name = "rpi-gpio"
 version = "0.7.1"
 description = "A module to control Raspberry Pi GPIO channels"
 category = "main"
 optional = true
 python-versions = "*"
-
-[[package]]
-name = "six"
-version = "1.16.0"
-description = "Python 2 and 3 compatibility utilities"
-category = "dev"
-optional = false
-python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
 
 [[package]]
 name = "snowballstemmer"
@@ -615,7 +588,7 @@ numpy = ">=1.22"
 pyquaternion = ">=0.9.2"
 
 [package.extras]
-cli = ["pillow", "tqdm"]
+cli = ["Pillow", "tqdm"]
 opencv = ["opencv-contrib-python (>=4.0,<4.6)"]
 rpi = ["picamera[array] (>=1.13)"]
 
@@ -625,7 +598,7 @@ kch = ["RPi.GPIO"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e5358fac48fe167d074d150e612498a42253f54e7e0d9c6511d3db843e301ce3"
+content-hash = "ca02590caabe92604faef8d7c03b5a6ab9b13b4fbcff2949ffb637700606f48d"
 
 [metadata.files]
 appdirs = [
@@ -713,11 +686,12 @@ exceptiongroup = [
     {file = "exceptiongroup-1.0.4.tar.gz", hash = "sha256:bd14967b79cd9bdb54d97323216f8fdf533e278df937aa2a90089e7d6e06e5ec"},
 ]
 flake8 = [
-    {file = "flake8-2.5.5-py2.py3-none-any.whl", hash = "sha256:80a66cd9bd66b0679da030fc930c0a4d09237dd72f354d899427b5c6718223b9"},
-    {file = "flake8-2.5.5.tar.gz", hash = "sha256:326a54ace7878a5ad1538110f2145bc6a134df43fff290475fd4e7ba38a6deea"},
+    {file = "flake8-5.0.4-py2.py3-none-any.whl", hash = "sha256:7a1cf6b73744f5806ab95e526f6f0d8c01c66d7bbe349562d22dfca20610b248"},
+    {file = "flake8-5.0.4.tar.gz", hash = "sha256:6fbe320aad8d6b95cec8b8e47bc933004678dc63095be98528b7bdd2a9f510db"},
 ]
 flake8-bugbear = [
-    {file = "flake8-bugbear-16.7.0.tar.gz", hash = "sha256:7910669f0517b7d08e4af018f06e46292a80d07509488f0f103a99552b091a51"},
+    {file = "flake8-bugbear-22.10.27.tar.gz", hash = "sha256:a6708608965c9e0de5fff13904fed82e0ba21ac929fe4896459226a797e11cd5"},
+    {file = "flake8_bugbear-22.10.27-py3-none-any.whl", hash = "sha256:6ad0ab754507319060695e2f2be80e6d8977cfcea082293089a9226276bd825d"},
 ]
 flake8-builtins = [
     {file = "flake8-builtins-2.0.1.tar.gz", hash = "sha256:5aeb420130efe8acbdaf8708a582492413293a3ca25653518f687937879650a5"},
@@ -728,15 +702,16 @@ flake8-commas = [
     {file = "flake8_commas-2.1.0-py2.py3-none-any.whl", hash = "sha256:ebb96c31e01d0ef1d0685a21f3f0e2f8153a0381430e748bf0bbbb5d5b453d54"},
 ]
 flake8-comprehensions = [
-    {file = "flake8-comprehensions-2.3.0.tar.gz", hash = "sha256:1d731dcccbef1f9a68b54d6846cf4e45cd2fea397cb0b71c463aab965118f594"},
-    {file = "flake8_comprehensions-2.3.0-py3-none-any.whl", hash = "sha256:5ead5962307187a13359a1f108ab7c371c8a63343fb0dfa9fc97c30612a99561"},
+    {file = "flake8-comprehensions-3.10.1.tar.gz", hash = "sha256:412052ac4a947f36b891143430fef4859705af11b2572fbb689f90d372cf26ab"},
+    {file = "flake8_comprehensions-3.10.1-py3-none-any.whl", hash = "sha256:d763de3c74bc18a79c039a7ec732e0a1985b0c79309ceb51e56401ad0a2cd44e"},
 ]
 flake8-debugger = [
-    {file = "flake8-debugger-3.2.1.tar.gz", hash = "sha256:712d7c1ff69ddf3f0130e94cc88c2519e720760bce45e8c330bfdcb61ab4090d"},
+    {file = "flake8-debugger-4.1.2.tar.gz", hash = "sha256:52b002560941e36d9bf806fca2523dc7fb8560a295d5f1a6e15ac2ded7a73840"},
+    {file = "flake8_debugger-4.1.2-py3-none-any.whl", hash = "sha256:0a5e55aeddcc81da631ad9c8c366e7318998f83ff00985a49e6b3ecf61e571bf"},
 ]
 flake8-docstrings = [
-    {file = "flake8-docstrings-1.3.1.tar.gz", hash = "sha256:d8d72ccd5807c1ab9ff1466cb9bece0c4d94b8669e9bc4f472abc80dbc5d399e"},
-    {file = "flake8_docstrings-1.3.1-py2.py3-none-any.whl", hash = "sha256:3ad372b641f4c8e70c7465f067aed4ff8bf1e9347fce14f9eb71ed816db36257"},
+    {file = "flake8-docstrings-1.6.0.tar.gz", hash = "sha256:9fe7c6a306064af8e62a055c2f61e9eb1da55f84bb39caef2b84ce53708ac34b"},
+    {file = "flake8_docstrings-1.6.0-py2.py3-none-any.whl", hash = "sha256:99cac583d6c7e32dd28bbfbef120a7c0d1b6dde4adb5a9fd441c4227a6534bde"},
 ]
 flake8-isort = [
     {file = "flake8-isort-5.0.3.tar.gz", hash = "sha256:0951398c343c67f4933407adbbfb495d4df7c038650c5d05753a006efcfeb390"},
@@ -746,12 +721,9 @@ flake8-mutable = [
     {file = "flake8-mutable-1.2.0.tar.gz", hash = "sha256:ee9b77111b867d845177bbc289d87d541445ffcc6029a0c5c65865b42b18c6a6"},
     {file = "flake8_mutable-1.2.0-py2-none-any.whl", hash = "sha256:38fd9dadcbcda6550a916197bc40ed76908119dabb37fbcca30873666c31d2d5"},
 ]
-flake8-polyfill = [
-    {file = "flake8-polyfill-1.0.2.tar.gz", hash = "sha256:e44b087597f6da52ec6393a709e7108b2905317d0c0b744cdca6208e670d8eda"},
-    {file = "flake8_polyfill-1.0.2-py2.py3-none-any.whl", hash = "sha256:12be6a34ee3ab795b19ca73505e7b55826d5f6ad7230d31b18e106400169b9e9"},
-]
 flake8-print = [
-    {file = "flake8-print-3.1.4.tar.gz", hash = "sha256:324f9e59a522518daa2461bacd7f82da3c34eb26a4314c2a54bd493f8b394a68"},
+    {file = "flake8-print-5.0.0.tar.gz", hash = "sha256:76915a2a389cc1c0879636c219eb909c38501d3a43cc8dae542081c9ba48bdf9"},
+    {file = "flake8_print-5.0.0-py3-none-any.whl", hash = "sha256:84a1a6ea10d7056b804221ac5e62b1cee1aefc897ce16f2e5c42d3046068f5d8"},
 ]
 flake8-todo = [
     {file = "flake8-todo-0.7.tar.gz", hash = "sha256:6e4c5491ff838c06fe5a771b0e95ee15fc005ca57196011011280fc834a85915"},
@@ -777,8 +749,8 @@ j5-zoloto = [
     {file = "j5_zoloto-0.4.0.tar.gz", hash = "sha256:57aacbd7b05d6b121cc52eea21f689ef24b47fa3366699dc77be545504e386bf"},
 ]
 mccabe = [
-    {file = "mccabe-0.4.0-py2.py3-none-any.whl", hash = "sha256:cbc2938f6c01061bc6d21d0c838c2489664755cb18676f0734d7617f4577d09e"},
-    {file = "mccabe-0.4.0.tar.gz", hash = "sha256:9a2b12ebd876e77c72e41ebf401cc2e7c5b566649d50105ca49822688642207b"},
+    {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
+    {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
 ]
 mypy = [
     {file = "mypy-0.991-cp310-cp310-macosx_10_9_universal2.whl", hash = "sha256:7d17e0a9707d0772f4a7b878f04b4fd11f6f5bcb9b3813975a9b13c9332153ab"},
@@ -853,17 +825,13 @@ packaging = [
 paho-mqtt = [
     {file = "paho-mqtt-1.6.1.tar.gz", hash = "sha256:2a8291c81623aec00372b5a85558a372c747cbca8e9934dfe218638b8eefc26f"},
 ]
-pep8 = [
-    {file = "pep8-1.7.1-py2.py3-none-any.whl", hash = "sha256:b22cfae5db09833bb9bd7c8463b53e1a9c9b39f12e304a8d0bba729c501827ee"},
-    {file = "pep8-1.7.1.tar.gz", hash = "sha256:fe249b52e20498e59e0b5c5256aa52ee99fc295b26ec9eaa85776ffdb9fe6374"},
-]
 pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
 ]
 pycodestyle = [
-    {file = "pycodestyle-2.10.0-py2.py3-none-any.whl", hash = "sha256:8a4eaf0d0495c7395bdab3589ac2db602797d76207242c17d470186815706610"},
-    {file = "pycodestyle-2.10.0.tar.gz", hash = "sha256:347187bdb476329d98f695c213d7295a846d1152ff4fe9bacb8a9590b8ee7053"},
+    {file = "pycodestyle-2.9.1-py2.py3-none-any.whl", hash = "sha256:d1735fc58b418fd7c5f658d28d943854f8a849b01a5d0a1e6f3f3fdd0166804b"},
+    {file = "pycodestyle-2.9.1.tar.gz", hash = "sha256:2c9607871d58c76354b697b42f5d57e1ada7d261c261efac224b664affdc5785"},
 ]
 pydantic = [
     {file = "pydantic-1.10.2-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:bb6ad4489af1bac6955d38ebcb95079a836af31e4c4f74aba1ca05bb9f6027bd"},
@@ -908,8 +876,8 @@ pydocstyle = [
     {file = "pydocstyle-6.1.1.tar.gz", hash = "sha256:1d41b7c459ba0ee6c345f2eb9ae827cab14a7533a88c5c6f7e94923f72df92dc"},
 ]
 pyflakes = [
-    {file = "pyflakes-1.0.0-py2.py3-none-any.whl", hash = "sha256:071d121e9e7b33058aa1ba5de7bce9b97bfa3149cfe1acbb6587c21fc1c8eda1"},
-    {file = "pyflakes-1.0.0.tar.gz", hash = "sha256:f39e33a4c03beead8774f005bd3ecf0c3f2f264fa0201de965fce0aff1d34263"},
+    {file = "pyflakes-2.5.0-py2.py3-none-any.whl", hash = "sha256:4579f67d887f804e67edb544428f264b7b24f435b263c4614f384135cea553d2"},
+    {file = "pyflakes-2.5.0.tar.gz", hash = "sha256:491feb020dca48ccc562a8c0cbe8df07ee13078df59813b83959cbdada312ea3"},
 ]
 pyparsing = [
     {file = "pyparsing-3.0.9-py3-none-any.whl", hash = "sha256:5026bae9a10eeaefb61dab2f09052b9f4307d44aee4eda64b309723d8d206bbc"},
@@ -944,19 +912,13 @@ rope = [
     {file = "rope-1.5.0-py3-none-any.whl", hash = "sha256:32a19332df0e40c14092ae35226c3d1f0c15ee2462ca2ce4b9936b8fd45f100d"},
     {file = "rope-1.5.0.tar.gz", hash = "sha256:45744d125f7db569b118ed487f08ab72f67fbef0b8441d02df2b756121f35942"},
 ]
-"rpi.gpio" = [
+rpi-gpio = [
     {file = "RPi.GPIO-0.7.1-cp27-cp27mu-linux_armv6l.whl", hash = "sha256:b86b66dc02faa5461b443a1e1f0c1d209d64ab5229696f32fb3b0215e0600c8c"},
     {file = "RPi.GPIO-0.7.1-cp310-cp310-linux_armv6l.whl", hash = "sha256:57b6c044ef5375a78c8dda27cdfadf329e76aa6943cd6cffbbbd345a9adf9ca5"},
     {file = "RPi.GPIO-0.7.1-cp37-cp37m-linux_armv6l.whl", hash = "sha256:77afb817b81331ce3049a4b8f94a85e41b7c404d8e56b61ac0f1eb75c3120868"},
     {file = "RPi.GPIO-0.7.1-cp38-cp38-linux_armv6l.whl", hash = "sha256:29226823da8b5ccb9001d795a944f2e00924eeae583490f0bc7317581172c624"},
     {file = "RPi.GPIO-0.7.1-cp39-cp39-linux_armv6l.whl", hash = "sha256:15311d3b063b71dee738cd26570effc9985a952454d162937c34e08c0fc99902"},
-    {file = "RPi.GPIO-0.7.1-py2.7-linux-armv6l.egg", hash = "sha256:26b2ade4bb353bbe5417a64e40b45cdf00a82f27c2d320c0dd46c59751959d77"},
-    {file = "RPi.GPIO-0.7.1-py3.7-linux-armv6l.egg", hash = "sha256:96ea7e5bf6bf592828487bfa7d3d1d0e432d5d1682e9e33b4dab398914628fcd"},
     {file = "RPi.GPIO-0.7.1.tar.gz", hash = "sha256:cd61c4b03c37b62bba4a5acfea9862749c33c618e0295e7e90aa4713fb373b70"},
-]
-six = [
-    {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
-    {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 snowballstemmer = [
     {file = "snowballstemmer-2.2.0-py2.py3-none-any.whl", hash = "sha256:c8e1716e83cc398ae16824e5572ae04e0d9fc2c6b985fb0f900f5f0c96ecba1a"},
