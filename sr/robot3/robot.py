@@ -89,7 +89,10 @@ class Robot(BaseRobot):
 
         self._init_cameras(self.metadata.marker_offset)
         if legacy_camera_axis:
+            LOGGER.info("Using legacy coordinate system for vision")
             os.environ['ZOLOTO_LEGACY_AXIS'] = '1'
+        else:
+            LOGGER.info("Using updated coordinate system for vision")
         self._init_power_board()
         self._init_auxiliary_boards()
 
