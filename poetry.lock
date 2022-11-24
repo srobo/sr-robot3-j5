@@ -280,15 +280,22 @@ pyusb = ">=1.0,<2.0"
 
 [[package]]
 name = "j5-zoloto"
-version = "0.4.0"
+version = "0.5.0"
 description = "j5 integration for Zoloto computer vision"
 category = "main"
 optional = false
-python-versions = ">=3.8,<4.0"
+python-versions = "^3.8"
+develop = false
 
 [package.dependencies]
-j5 = ">=1.0.0,<2.0.0"
-zoloto = ">=0.9.0,<0.10.0"
+j5 = "^1.0.0"
+zoloto = {git = "https://github.com/srobo/zoloto.git", tag = "0.10.0+srobo"}
+
+[package.source]
+type = "git"
+url = "https://github.com/j5api/j5-zoloto.git"
+reference = "v0.5.0"
+resolved_reference = "1dee81326e6680503090552f7c9c47b37aaeea2d"
 
 [[package]]
 name = "mccabe"
@@ -576,11 +583,12 @@ python-versions = ">=3.7"
 
 [[package]]
 name = "zoloto"
-version = "0.9.0"
-description = "A fiducial marker system powered by OpenCV - Supports ArUco and April"
+version = "0.10.0+srobo"
+description = ""
 category = "main"
 optional = false
 python-versions = ">=3.8"
+develop = false
 
 [package.dependencies]
 cached-property = ">=1.5"
@@ -592,13 +600,19 @@ cli = ["Pillow", "tqdm"]
 opencv = ["opencv-contrib-python (>=4.0,<4.6)"]
 rpi = ["picamera[array] (>=1.13)"]
 
+[package.source]
+type = "git"
+url = "https://github.com/srobo/zoloto.git"
+reference = "0.10.0+srobo"
+resolved_reference = "a9586685b18f2f473849d9838c5578fea41ea9ab"
+
 [extras]
 kch = ["RPi.GPIO"]
 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "ca02590caabe92604faef8d7c03b5a6ab9b13b4fbcff2949ffb637700606f48d"
+content-hash = "71735276e1bc431d6715a4af80aca31d749b844bd2734d5f6ccf667423286f15"
 
 [metadata.files]
 appdirs = [
@@ -744,10 +758,7 @@ j5 = [
     {file = "j5-1.1.2-py3-none-any.whl", hash = "sha256:6d48865e4a702326b637e02444dfc66700c34dbcf2167d28de751acb481242bb"},
     {file = "j5-1.1.2.tar.gz", hash = "sha256:1e7c74ce97a976f7489464daefa59e8791679c88223f7b1e7c351155763dc0bc"},
 ]
-j5-zoloto = [
-    {file = "j5_zoloto-0.4.0-py3-none-any.whl", hash = "sha256:c88052b7619a92676010d657979472be687cdf22e3a5fb86132ad52343af5d95"},
-    {file = "j5_zoloto-0.4.0.tar.gz", hash = "sha256:57aacbd7b05d6b121cc52eea21f689ef24b47fa3366699dc77be545504e386bf"},
-]
+j5-zoloto = []
 mccabe = [
     {file = "mccabe-0.7.0-py2.py3-none-any.whl", hash = "sha256:6c2d30ab6be0e4a46919781807b4f0d834ebdd6c6e3dca0bda5a15f863427b6e"},
     {file = "mccabe-0.7.0.tar.gz", hash = "sha256:348e0240c33b60bbdf4e523192ef919f28cb2c3d7d5c7794f74009290f236325"},
@@ -940,7 +951,4 @@ typing-extensions = [
     {file = "typing_extensions-4.4.0-py3-none-any.whl", hash = "sha256:16fa4864408f655d35ec496218b85f79b3437c829e93320c7c9215ccfd92489e"},
     {file = "typing_extensions-4.4.0.tar.gz", hash = "sha256:1511434bb92bf8dd198c12b1cc812e800d4181cfcb867674e0f8279cc93087aa"},
 ]
-zoloto = [
-    {file = "zoloto-0.9.0-py3-none-any.whl", hash = "sha256:b8d75efd529a8f2179db4216c45631c2a75ca764cb0a0bea48eaab7c4bdf4725"},
-    {file = "zoloto-0.9.0.tar.gz", hash = "sha256:39151c13afac718bcd60a858348994d0ba5b73ba9cab367f886be0f1bd4a443f"},
-]
+zoloto = []
