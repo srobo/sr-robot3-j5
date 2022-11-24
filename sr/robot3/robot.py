@@ -26,7 +26,7 @@ from .mqtt import init_mqtt
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
-__version__ = "2023.0.5"
+__version__ = "2023.1.0"
 
 
 LOGGER = logging.getLogger(__name__)
