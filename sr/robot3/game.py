@@ -8,7 +8,7 @@ class UnusedMarkerException(Exception):
 
 MARKER_SIZES: Dict[Container[int], int] = {
     range(28): 200,  # 0 - 27 for arena boundary
-    range(28, 100): 80,  # Everything else is a token
+    range(28, 101): 80,  # Everything else is a token
 }
 
 
