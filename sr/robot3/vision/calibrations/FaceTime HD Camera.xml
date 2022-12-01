@@ -31,4 +31,5 @@
   <data>
     1.2370831283282813e-02 0. 0. 0. 7.8882690649474521e-02</data></dist_coeffs_std_dev>
 <avg_reprojection_error>4.8677611488489964e-01</avg_reprojection_error>
+<vidpid>"FaceTime HD Camera"</vidpid>
 </opencv_storage>
