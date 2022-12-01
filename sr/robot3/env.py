@@ -13,6 +13,7 @@ from j5.backends.hardware.sr.v4 import (
     SRV4RuggeduinoHardwareBackend,
     SRV4ServoBoardHardwareBackend,
 )
+from april_vision.j5 import AprilTagHardwareBackend
 
 __all__ = [
     "HARDWARE_ENVIRONMENT",
@@ -43,3 +44,11 @@ CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRV4ServoBoardConsoleBackend)
 CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRV4MotorBoardConsoleBackend)
 CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRV4RuggeduinoConsoleBackend)
 CONSOLE_ENVIRONMENT_WITH_VISION.register_backend(SRZolotoHardwareBackend)
+
+CONSOLE_ENVIRONMENT_WITH_APRIL = Environment("Console Environment with AprilTag")
+
+CONSOLE_ENVIRONMENT_WITH_APRIL.register_backend(SRV4PowerBoardConsoleBackend)
+CONSOLE_ENVIRONMENT_WITH_APRIL.register_backend(SRV4ServoBoardConsoleBackend)
+CONSOLE_ENVIRONMENT_WITH_APRIL.register_backend(SRV4MotorBoardConsoleBackend)
+CONSOLE_ENVIRONMENT_WITH_APRIL.register_backend(SRV4RuggeduinoConsoleBackend)
+CONSOLE_ENVIRONMENT_WITH_APRIL.register_backend(AprilTagHardwareBackend)

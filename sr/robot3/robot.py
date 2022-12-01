@@ -18,11 +18,13 @@ from j5.components.piezo import Note
 from j5_zoloto import ZolotoCameraBoard, ZolotoHardwareBackend
 from serial.tools.list_ports_common import ListPortInfo
 from zoloto.cameras.camera import find_camera_ids
+from april_vision.j5 import AprilCameraBoard
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
 from .kch import KCH
 from .mqtt import init_mqtt
+from .game import MARKER_SIZES
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
@@ -108,29 +110,42 @@ class Robot(BaseRobot):
 
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
-        backend_class: Type[Backend] = self._environment.get_backend(ZolotoCameraBoard)
+        try:
+            backend_class: Type[Backend] = self._environment.get_backend(ZolotoCameraBoard)
 
-        # Override the hardware backend with our custom one
-        if backend_class is ZolotoHardwareBackend:
-            backend_class = SRZolotoHardwareBackend
+            # Override the hardware backend with our custom one
+            if backend_class is ZolotoHardwareBackend:
+                backend_class = SRZolotoHardwareBackend
 
-        class OffsetZolotoBackend(backend_class):  # type: ignore
-            """A zoloto backend, with marker offsets added."""
+            class OffsetZolotoBackend(backend_class):  # type: ignore
+                """A zoloto backend, with marker offsets added."""
 
-            @classmethod
-            def discover(cls) -> Set[Board]:
-                return {
-                    ZolotoCameraBoard(
-                        str(camera_id),
-                        cls(camera_id, marker_offset=marker_offset),
-                    )
-                    for camera_id in find_camera_ids()
-                }
+                @classmethod
+                def discover(cls) -> Set[Board]:
+                    return {
+                        ZolotoCameraBoard(
+                            str(camera_id),
+                            cls(camera_id, marker_offset=marker_offset),
+                        )
+                        for camera_id in find_camera_ids()
+                    }
 
-        self._cameras = BoardGroup.get_board_group(
-            ZolotoCameraBoard,
-            OffsetZolotoBackend,
-        )
+            self._cameras = BoardGroup.get_board_group(
+                ZolotoCameraBoard,
+                OffsetZolotoBackend,
+            )
+        except NotImplementedError:
+            try:
+                # Setup calibration file locations
+                from .vision.calibrations import __file__ as calibrations
+                os.environ['OPENCV_CALIBRATIONS'] = os.path.dirname(calibrations)
+                print(os.environ['OPENCV_CALIBRATIONS'])
+                self._cameras = self._environment.get_board_group(AprilCameraBoard)
+                # setup marker sizes
+                for cam in self._cameras:
+                    cam._backend.set_marker_sizes(MARKER_SIZES, marker_offset=marker_offset)
+            except NotImplementedError:
+                LOGGER.warning("No camera backend found")
 
     def _init_power_board(self) -> None:
         """
@@ -184,8 +199,15 @@ class Robot(BaseRobot):
         offset = self._metadata.marker_offset
         if hasattr(self, '_cameras'):
             for camera in self._cameras:
-                zcam = camera._backend._zcam  # type: ignore[attr-defined]
-                zcam._marker_offset = offset
+                try:
+                    zcam = camera._backend._zcam  # type: ignore[attr-defined]
+                    zcam._marker_offset = offset
+                except AttributeError:
+                    try:
+                        # Update enabled markers
+                        camera._backend.set_marker_sizes(MARKER_SIZES, marker_offset=offset)
+                    except AttributeError:
+                        pass
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
