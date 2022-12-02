@@ -68,7 +68,8 @@ class Robot(BaseRobot):
         self._environment = env
 
         if verbose:
-            LOGGER.setLevel(logging.DEBUG)
+            # Set root logger to DEBUG level
+            logging.getLogger().setLevel(logging.DEBUG)
             os.environ["OPENCV_LOG_LEVEL"] = "DEBUG"
         else:
             os.environ["OPENCV_LOG_LEVEL"] = "ERROR"
