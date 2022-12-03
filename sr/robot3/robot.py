@@ -140,7 +140,13 @@ class Robot(BaseRobot):
             try:
                 # Setup calibration file locations
                 from .vision.calibrations import __file__ as calibrations
-                os.environ['OPENCV_CALIBRATIONS'] = os.path.dirname(calibrations)
+
+                # get any pre-defined calibration locations
+                current_calibrations = os.environ.get('OPENCV_CALIBRATIONS', '')
+                calibration_locs = ':'.join(
+                    [current_calibrations, os.path.dirname(calibrations)])
+                os.environ['OPENCV_CALIBRATIONS'] = calibration_locs.strip(':')
+
                 self._cameras = self._environment.get_board_group(AprilCameraBoard)
                 # setup marker sizes
                 for cam in self._cameras:
