@@ -8,6 +8,7 @@ from datetime import timedelta
 from pathlib import Path
 from typing import Dict, List, Optional, Set, Type
 
+from april_vision.j5 import AprilCameraBoard
 from astoria.common.metadata import Metadata, RobotMode
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
@@ -18,13 +19,12 @@ from j5.components.piezo import Note
 from j5_zoloto import ZolotoCameraBoard, ZolotoHardwareBackend
 from serial.tools.list_ports_common import ListPortInfo
 from zoloto.cameras.camera import find_camera_ids
-from april_vision.j5 import AprilCameraBoard
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
+from .game import MARKER_SIZES
 from .kch import KCH
 from .mqtt import init_mqtt
-from .game import MARKER_SIZES
 from .timeout import kill_after_delay
 from .vision import SRZolotoHardwareBackend
 
@@ -111,7 +111,8 @@ class Robot(BaseRobot):
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
         try:
-            backend_class: Type[Backend] = self._environment.get_backend(ZolotoCameraBoard)
+            backend_class: Type[Backend] = self._environment.get_backend(
+                ZolotoCameraBoard)
 
             # Override the hardware backend with our custom one
             if backend_class is ZolotoHardwareBackend:
@@ -139,11 +140,11 @@ class Robot(BaseRobot):
                 # Setup calibration file locations
                 from .vision.calibrations import __file__ as calibrations
                 os.environ['OPENCV_CALIBRATIONS'] = os.path.dirname(calibrations)
-                print(os.environ['OPENCV_CALIBRATIONS'])
                 self._cameras = self._environment.get_board_group(AprilCameraBoard)
                 # setup marker sizes
                 for cam in self._cameras:
-                    cam._backend.set_marker_sizes(MARKER_SIZES, marker_offset=marker_offset)
+                    cam._backend.set_marker_sizes(  # type: ignore[attr-defined]
+                        MARKER_SIZES, marker_offset=marker_offset)
             except NotImplementedError:
                 LOGGER.warning("No camera backend found")
 
@@ -205,7 +206,8 @@ class Robot(BaseRobot):
                 except AttributeError:
                     try:
                         # Update enabled markers
-                        camera._backend.set_marker_sizes(MARKER_SIZES, marker_offset=offset)
+                        camera._backend.set_marker_sizes(  # type: ignore[attr-defined]
+                            MARKER_SIZES, marker_offset=offset)
                     except AttributeError:
                         pass
 

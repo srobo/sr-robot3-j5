@@ -1,5 +1,6 @@
 """Environment definitions."""
 
+from april_vision.j5 import AprilTagHardwareBackend
 from j5.backends import Environment
 from j5.backends.console.sr.v4 import (
     SRV4MotorBoardConsoleBackend,
@@ -13,7 +14,6 @@ from j5.backends.hardware.sr.v4 import (
     SRV4RuggeduinoHardwareBackend,
     SRV4ServoBoardHardwareBackend,
 )
-from april_vision.j5 import AprilTagHardwareBackend
 
 __all__ = [
     "HARDWARE_ENVIRONMENT",
