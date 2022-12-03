@@ -6,7 +6,7 @@ import threading
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Type
+from typing import Dict, List, Optional, Set, Type, Union
 
 from april_vision.j5 import AprilCameraBoard
 from astoria.common.metadata import Metadata, RobotMode
@@ -110,6 +110,7 @@ class Robot(BaseRobot):
 
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
+        self._cameras: BoardGroup[Union[ZolotoCameraBoard, AprilCameraBoard], Backend]
         try:
             backend_class: Type[Backend] = self._environment.get_backend(
                 ZolotoCameraBoard)
@@ -220,11 +221,12 @@ class Robot(BaseRobot):
             )
 
     @property
-    def camera(self) -> ZolotoCameraBoard:
+    def camera(self) -> Union[ZolotoCameraBoard, AprilCameraBoard]:
         """
         Get the robot's camera interface.
 
-        :returns: a :class:`j5_zoloto.board.ZolotoCameraBoard`.
+        :returns: either a :class:`j5_zoloto.board.ZolotoCameraBoard` or a
+        :class:`april_vision.j5.AprilCameraBoard`.
         """
         return self._cameras.singular()
 
