@@ -7,6 +7,26 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "april-vision"
+version = "0.1.1"
+description = "An AprilTags wrapper with camera discovery and axis conversion."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+j5 = {version = ">=1,<2", optional = true, markers = "extra == \"j5\""}
+numpy = ">=1.21,<2"
+pyapriltags = ">=3.3.0.post1,<4"
+pyquaternion = ">=0.9.9,<1"
+
+[package.extras]
+cli = ["opencv-python (>=4,<5)"]
+dev = ["build", "flake8", "isort", "mypy"]
+j5 = ["j5 (>=1,<2)"]
+opencv = ["opencv-python-headless (>=4,<5)"]
+
+[[package]]
 name = "astoria"
 version = "0.11.1"
 description = "Robot Management System for Student Robotics Kit"
@@ -375,6 +395,17 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "pyapriltags"
+version = "3.3.0.post2"
+description = "Python bindings for the Apriltags library"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+numpy = "*"
+
+[[package]]
 name = "pycodestyle"
 version = "2.9.1"
 description = "Python style guide checker"
@@ -612,12 +643,15 @@ kch = ["RPi.GPIO"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "71735276e1bc431d6715a4af80aca31d749b844bd2734d5f6ccf667423286f15"
+content-hash = "e7e2b7f4eaed5a70e7edb6249714dd1ee610d23a0306fc53367572c8acf2c04f"
 
 [metadata.files]
 appdirs = [
     {file = "appdirs-1.4.4-py2.py3-none-any.whl", hash = "sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128"},
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
+]
+april-vision = [
+    {file = "april_vision-0.1.1-py3-none-any.whl", hash = "sha256:396ce5ced5c102bbdabae39bbfcf1de923409d6d4d9251341afc114e027de2c6"},
 ]
 astoria = [
     {file = "astoria-0.11.1-py3-none-any.whl", hash = "sha256:5fb803a68295c561917682386f9cd309bb60cb7b9bde95490cb916222fff814a"},
@@ -839,6 +873,14 @@ paho-mqtt = [
 pluggy = [
     {file = "pluggy-1.0.0-py2.py3-none-any.whl", hash = "sha256:74134bbf457f031a36d68416e1509f34bd5ccc019f0bcc952c7b909d06b37bd3"},
     {file = "pluggy-1.0.0.tar.gz", hash = "sha256:4224373bacce55f955a878bf9cfa763c1e360858e330072059e10bad68531159"},
+]
+pyapriltags = [
+    {file = "pyapriltags-3.3.0.post2-py3-none-macosx_11_0_arm64.whl", hash = "sha256:a2efd3c144b32f2add5fb2d45a0f3e8db4b8dcfdd8f11a6639a68604d603c62c"},
+    {file = "pyapriltags-3.3.0.post2-py3-none-macosx_11_0_x86_64.whl", hash = "sha256:284abde2e43c747d03f676a1337aad4f1b06e9774a6f8a6d6208dba0f599ce6a"},
+    {file = "pyapriltags-3.3.0.post2-py3-none-manylinux2010_x86_64.whl", hash = "sha256:64ec89417fca2b4c67e8edd01a3b2507e83e48069822f3411f55e671d7bc8168"},
+    {file = "pyapriltags-3.3.0.post2-py3-none-manylinux2014_aarch64.whl", hash = "sha256:8ae61edead3f14edb5658b061a510c48986a0c86994a9859d168a8005f0d6246"},
+    {file = "pyapriltags-3.3.0.post2-py3-none-manylinux2014_armv7l.whl", hash = "sha256:74d4341aec91d47660761c9dc0c4dc4a36b1297ebd8a6229e953b088ae712077"},
+    {file = "pyapriltags-3.3.0.post2-py3-none-win_amd64.whl", hash = "sha256:925e240e7204229a043e3b1512821bde698a0ae0412bc40b9cee08191582b7cd"},
 ]
 pycodestyle = [
     {file = "pycodestyle-2.9.1-py2.py3-none-any.whl", hash = "sha256:d1735fc58b418fd7c5f658d28d943854f8a849b01a5d0a1e6f3f3fdd0166804b"},
