@@ -6,7 +6,7 @@ import threading
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Type, Union
+from typing import Dict, List, Optional, Type
 
 from april_vision.j5 import AprilCameraBoard
 from astoria.common.metadata import Metadata, RobotMode
@@ -16,9 +16,7 @@ from j5.backends import Backend
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, Ruggeduino, ServoBoard
 from j5.components.piezo import Note
-from j5_zoloto import ZolotoCameraBoard, ZolotoHardwareBackend
 from serial.tools.list_ports_common import ListPortInfo
-from zoloto.cameras.camera import find_camera_ids
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
@@ -26,7 +24,6 @@ from .game import MARKER_SIZES
 from .kch import KCH
 from .mqtt import init_mqtt
 from .timeout import kill_after_delay
-from .vision import SRZolotoHardwareBackend
 
 __version__ = "2023.1.0"
 
@@ -110,50 +107,24 @@ class Robot(BaseRobot):
 
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
-        self._cameras: BoardGroup[Union[ZolotoCameraBoard, AprilCameraBoard], Backend]
+        self._cameras: BoardGroup[AprilCameraBoard, Backend]
         try:
-            backend_class: Type[Backend] = self._environment.get_backend(
-                ZolotoCameraBoard)
+            # Setup calibration file locations
+            from .vision.calibrations import __file__ as calibrations
 
-            # Override the hardware backend with our custom one
-            if backend_class is ZolotoHardwareBackend:
-                backend_class = SRZolotoHardwareBackend
+            # get any pre-defined calibration locations
+            current_calibrations = os.environ.get('OPENCV_CALIBRATIONS', '')
+            calibration_locs = ':'.join(
+                [current_calibrations, os.path.dirname(calibrations)])
+            os.environ['OPENCV_CALIBRATIONS'] = calibration_locs.strip(':')
 
-            class OffsetZolotoBackend(backend_class):  # type: ignore
-                """A zoloto backend, with marker offsets added."""
-
-                @classmethod
-                def discover(cls) -> Set[Board]:
-                    return {
-                        ZolotoCameraBoard(
-                            str(camera_id),
-                            cls(camera_id, marker_offset=marker_offset),
-                        )
-                        for camera_id in find_camera_ids()
-                    }
-
-            self._cameras = BoardGroup.get_board_group(
-                ZolotoCameraBoard,
-                OffsetZolotoBackend,
-            )
+            self._cameras = self._environment.get_board_group(AprilCameraBoard)
+            # setup marker sizes
+            for cam in self._cameras:
+                cam._backend.set_marker_sizes(  # type: ignore[attr-defined]
+                    MARKER_SIZES, marker_offset=marker_offset)
         except NotImplementedError:
-            try:
-                # Setup calibration file locations
-                from .vision.calibrations import __file__ as calibrations
-
-                # get any pre-defined calibration locations
-                current_calibrations = os.environ.get('OPENCV_CALIBRATIONS', '')
-                calibration_locs = ':'.join(
-                    [current_calibrations, os.path.dirname(calibrations)])
-                os.environ['OPENCV_CALIBRATIONS'] = calibration_locs.strip(':')
-
-                self._cameras = self._environment.get_board_group(AprilCameraBoard)
-                # setup marker sizes
-                for cam in self._cameras:
-                    cam._backend.set_marker_sizes(  # type: ignore[attr-defined]
-                        MARKER_SIZES, marker_offset=marker_offset)
-            except NotImplementedError:
-                LOGGER.warning("No camera backend found")
+            LOGGER.warning("No camera backend found")
 
     def _init_power_board(self) -> None:
         """
@@ -208,15 +179,11 @@ class Robot(BaseRobot):
         if hasattr(self, '_cameras'):
             for camera in self._cameras:
                 try:
-                    zcam = camera._backend._zcam  # type: ignore[attr-defined]
-                    zcam._marker_offset = offset
+                    # Update enabled markers
+                    camera._backend.set_marker_sizes(  # type: ignore[attr-defined]
+                        MARKER_SIZES, marker_offset=offset)
                 except AttributeError:
-                    try:
-                        # Update enabled markers
-                        camera._backend.set_marker_sizes(  # type: ignore[attr-defined]
-                            MARKER_SIZES, marker_offset=offset)
-                    except AttributeError:
-                        pass
+                    pass
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
@@ -227,12 +194,11 @@ class Robot(BaseRobot):
             )
 
     @property
-    def camera(self) -> Union[ZolotoCameraBoard, AprilCameraBoard]:
+    def camera(self) -> AprilCameraBoard:
         """
         Get the robot's camera interface.
 
-        :returns: either a :class:`j5_zoloto.board.ZolotoCameraBoard` or a
-        :class:`april_vision.j5.AprilCameraBoard`.
+        :returns: a :class:`april_vision.j5.AprilCameraBoard`.
         """
         return self._cameras.singular()
 
