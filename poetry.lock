@@ -8,7 +8,7 @@ python-versions = "*"
 
 [[package]]
 name = "april-vision"
-version = "0.1.1"
+version = "0.2.0"
 description = "An AprilTags wrapper with camera discovery and axis conversion."
 category = "main"
 optional = false
@@ -643,7 +643,7 @@ kch = ["RPi.GPIO"]
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e7e2b7f4eaed5a70e7edb6249714dd1ee610d23a0306fc53367572c8acf2c04f"
+content-hash = "de52fe89c56f48ff7d5a270b40f0078b086ba23b5aa3df1c22b1537fbaa07b3d"
 
 [metadata.files]
 appdirs = [
@@ -651,7 +651,7 @@ appdirs = [
     {file = "appdirs-1.4.4.tar.gz", hash = "sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41"},
 ]
 april-vision = [
-    {file = "april_vision-0.1.1-py3-none-any.whl", hash = "sha256:396ce5ced5c102bbdabae39bbfcf1de923409d6d4d9251341afc114e027de2c6"},
+    {file = "april_vision-0.2.0-py3-none-any.whl", hash = "sha256:cc08234bc4df0da4307966bbb9478f62e87f1d47933946258ffb21407d019881"},
 ]
 astoria = [
     {file = "astoria-0.11.1-py3-none-any.whl", hash = "sha256:5fb803a68295c561917682386f9cd309bb60cb7b9bde95490cb916222fff814a"},
