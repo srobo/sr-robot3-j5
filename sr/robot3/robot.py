@@ -121,7 +121,7 @@ class Robot(BaseRobot):
             self._cameras = self._environment.get_board_group(AprilCameraBoard)
             # setup marker sizes
             for cam in self._cameras:
-                cam._backend.set_marker_sizes(  # type: ignore[attr-defined]
+                cam._backend.set_marker_sizes(
                     MARKER_SIZES, marker_offset=marker_offset)
         except NotImplementedError:
             LOGGER.warning("No camera backend found")
@@ -180,7 +180,7 @@ class Robot(BaseRobot):
             for camera in self._cameras:
                 try:
                     # Update enabled markers
-                    camera._backend.set_marker_sizes(  # type: ignore[attr-defined]
+                    camera._backend.set_marker_sizes(
                         MARKER_SIZES, marker_offset=offset)
                 except AttributeError:
                     pass
