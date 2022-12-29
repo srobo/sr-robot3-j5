@@ -123,6 +123,10 @@ class Robot(BaseRobot):
             for cam in self._cameras:
                 cam._backend.set_marker_sizes(
                     MARKER_SIZES, marker_offset=marker_offset)
+
+                # Insert a reference to the MQTT client into the camera backend
+                # to allow frames to be sent to the website
+                cam._backend._mqttc = self._mqtt
         except NotImplementedError:
             LOGGER.warning("No camera backend found")
 
