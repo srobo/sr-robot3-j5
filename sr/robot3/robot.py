@@ -126,7 +126,7 @@ class Robot(BaseRobot):
 
                 # Insert a reference to the MQTT client into the camera backend
                 # to allow frames to be sent to the website
-                cam._backend._mqttc = self._mqtt  # type: ignore[attr-defined]
+                cam._backend._mqttc = self._mqtt  # type: ignore[assignment]
         except NotImplementedError:
             LOGGER.warning("No camera backend found")
 
