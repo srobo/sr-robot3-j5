@@ -6,7 +6,7 @@ import threading
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Type
+from typing import Dict, List, Optional, Type, Union
 
 from april_vision.j5 import AprilCameraBoard
 from astoria.common.metadata import Metadata, RobotMode
@@ -107,6 +107,9 @@ class Robot(BaseRobot):
 
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
+        def mqtt_publish_callback(topic: str, payload: Union[bytes, str]) -> None:
+            self._mqtt.publish(topic, payload, auto_prefix_topic=False)
+
         self._cameras: BoardGroup[AprilCameraBoard, Backend]
         try:
             # Setup calibration file locations
@@ -123,6 +126,10 @@ class Robot(BaseRobot):
             for cam in self._cameras:
                 cam._backend.set_marker_sizes(
                     MARKER_SIZES, marker_offset=marker_offset)
+
+                # Insert a reference to the MQTT client into the camera backend
+                # to allow frames to be sent to the website
+                cam._backend._mqtt_publish = mqtt_publish_callback
         except NotImplementedError:
             LOGGER.warning("No camera backend found")
 
