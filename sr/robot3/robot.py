@@ -25,7 +25,7 @@ from .kch import KCH
 from .mqtt import init_mqtt
 from .timeout import kill_after_delay
 
-__version__ = "2023.1.0"
+__version__ = "2023.2.0"
 
 
 LOGGER = logging.getLogger(__name__)
