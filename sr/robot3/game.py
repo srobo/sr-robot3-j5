@@ -1,12 +1,12 @@
 """Game specific code."""
-from typing import Container, Dict
+from typing import Dict, Iterable
 
 
 class UnusedMarkerException(Exception):
     """This marker is not used for the game."""
 
 
-MARKER_SIZES: Dict[Container[int], int] = {
+MARKER_SIZES: Dict[Iterable[int], int] = {
     range(28): 200,  # 0 - 27 for arena boundary
     range(28, 100): 80,  # Everything else is a token
 }

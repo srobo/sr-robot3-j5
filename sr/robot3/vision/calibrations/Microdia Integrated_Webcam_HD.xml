@@ -31,4 +31,5 @@
   <data>
     0. 0. 0. 0. 0.</data></dist_coeffs_std_dev>
 <avg_reprojection_error>3.0528763278506471e-01</avg_reprojection_error>
+<vidpid>"0c45:6713"</vidpid>
 </opencv_storage>

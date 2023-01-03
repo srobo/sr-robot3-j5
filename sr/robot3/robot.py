@@ -6,8 +6,9 @@ import threading
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Set, Type
+from typing import Dict, List, Optional, Type, Union
 
+from april_vision.j5 import AprilCameraBoard
 from astoria.common.metadata import Metadata, RobotMode
 from j5 import BaseRobot, Environment
 from j5 import __version__ as j5_version
@@ -15,16 +16,14 @@ from j5.backends import Backend
 from j5.boards import Board, BoardGroup
 from j5.boards.sr.v4 import MotorBoard, PowerBoard, Ruggeduino, ServoBoard
 from j5.components.piezo import Note
-from j5_zoloto import ZolotoCameraBoard, ZolotoHardwareBackend
 from serial.tools.list_ports_common import ListPortInfo
-from zoloto.cameras.camera import find_camera_ids
 
 from .astoria import GetMetadataConsumer, WaitForStartButtonBroadcastConsumer
 from .env import HARDWARE_ENVIRONMENT
+from .game import MARKER_SIZES
 from .kch import KCH
 from .mqtt import init_mqtt
 from .timeout import kill_after_delay
-from .vision import SRZolotoHardwareBackend
 
 __version__ = "2023.1.0"
 
@@ -109,29 +108,31 @@ class Robot(BaseRobot):
 
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
-        backend_class: Type[Backend] = self._environment.get_backend(ZolotoCameraBoard)
+        def mqtt_publish_callback(topic: str, payload: Union[bytes, str]) -> None:
+            self._mqtt.publish(topic, payload, auto_prefix_topic=False)
 
-        # Override the hardware backend with our custom one
-        if backend_class is ZolotoHardwareBackend:
-            backend_class = SRZolotoHardwareBackend
+        self._cameras: BoardGroup[AprilCameraBoard, Backend]
+        try:
+            # Setup calibration file locations
+            from .vision.calibrations import __file__ as calibrations
 
-        class OffsetZolotoBackend(backend_class):  # type: ignore
-            """A zoloto backend, with marker offsets added."""
+            # get any pre-defined calibration locations
+            current_calibrations = os.environ.get('OPENCV_CALIBRATIONS', '')
+            calibration_locs = ':'.join(
+                [current_calibrations, os.path.dirname(calibrations)])
+            os.environ['OPENCV_CALIBRATIONS'] = calibration_locs.strip(':')
 
-            @classmethod
-            def discover(cls) -> Set[Board]:
-                return {
-                    ZolotoCameraBoard(
-                        str(camera_id),
-                        cls(camera_id, marker_offset=marker_offset),
-                    )
-                    for camera_id in find_camera_ids()
-                }
+            self._cameras = self._environment.get_board_group(AprilCameraBoard)
+            # setup marker sizes
+            for cam in self._cameras:
+                cam._backend.set_marker_sizes(
+                    MARKER_SIZES, marker_offset=marker_offset)
 
-        self._cameras = BoardGroup.get_board_group(
-            ZolotoCameraBoard,
-            OffsetZolotoBackend,
-        )
+                # Insert a reference to the MQTT client into the camera backend
+                # to allow frames to be sent to the website
+                cam._backend._mqtt_publish = mqtt_publish_callback
+        except NotImplementedError:
+            LOGGER.warning("No camera backend found")
 
     def _init_power_board(self) -> None:
         """
@@ -185,8 +186,12 @@ class Robot(BaseRobot):
         offset = self._metadata.marker_offset
         if hasattr(self, '_cameras'):
             for camera in self._cameras:
-                zcam = camera._backend._zcam  # type: ignore[attr-defined]
-                zcam._marker_offset = offset
+                try:
+                    # Update enabled markers
+                    camera._backend.set_marker_sizes(
+                        MARKER_SIZES, marker_offset=offset)
+                except AttributeError:
+                    pass
 
     def _log_discovered_boards(self) -> None:
         """Log all boards that we have discovered."""
@@ -197,11 +202,11 @@ class Robot(BaseRobot):
             )
 
     @property
-    def camera(self) -> ZolotoCameraBoard:
+    def camera(self) -> AprilCameraBoard:
         """
         Get the robot's camera interface.
 
-        :returns: a :class:`j5_zoloto.board.ZolotoCameraBoard`.
+        :returns: a :class:`april_vision.j5.AprilCameraBoard`.
         """
         return self._cameras.singular()
 
