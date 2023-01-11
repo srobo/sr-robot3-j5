@@ -48,6 +48,11 @@ class MQTTClient:
         self._client = mqtt.Client(client_id=client_name, protocol=mqtt_version)
         self._client.on_connect = self._on_connect
 
+    @property
+    def is_connected(self) -> bool:
+        """Get whether the MQTT client is connected."""
+        return self._client.is_connected()
+
     def connect(self, host: str, port: int) -> None:
         """
         Connect to the MQTT broker and start event loop in background thread.

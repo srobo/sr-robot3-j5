@@ -127,10 +127,11 @@ class Robot(BaseRobot):
 
             # Insert a reference to the MQTT client into the camera backend
             # to allow frames to be sent to the website
-            cam._backend._mqtt_publish = partial(
-                self._mqtt.publish,
-                auto_prefix_topic=False,
-            )
+            if self._mqtt.is_connected:
+                cam._backend._mqtt_publish = partial(
+                    self._mqtt.publish,
+                    auto_prefix_topic=False,
+                )
 
     def _init_power_board(self) -> None:
         """
