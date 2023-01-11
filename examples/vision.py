@@ -1,3 +1,4 @@
+"""Example code for vision."""
 from sr.robot3 import Robot
 from sr.robot3.env import CONSOLE_ENVIRONMENT_WITH_VISION
 
