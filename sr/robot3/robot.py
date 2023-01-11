@@ -1,12 +1,13 @@
 """sr.robot3 Robot class."""
 
+from functools import partial
 import logging
 import os
 import threading
 import time
 from datetime import timedelta
 from pathlib import Path
-from typing import Dict, List, Optional, Type, Union
+from typing import Dict, List, Optional, Type
 
 from april_vision.j5 import AprilCameraBoard
 from astoria.common.metadata import Metadata, RobotMode
@@ -106,33 +107,31 @@ class Robot(BaseRobot):
             LOGGER.debug("Auto start is disabled.")
             self.wait_start()
 
+    def _set_camera_calibrations(self) -> None:
+        current_calibrations = os.environ.get('OPENCV_CALIBRATIONS', '')
+        calibration_locs = ':'.join([
+            current_calibrations,
+            str(Path(__file__).parent.joinpath("calibrations")),
+        ])
+        os.environ['OPENCV_CALIBRATIONS'] = calibration_locs.strip(':')
+
     def _init_cameras(self, marker_offset: int) -> None:
         """Initialise vision system for a single camera."""
-        def mqtt_publish_callback(topic: str, payload: Union[bytes, str]) -> None:
-            self._mqtt.publish(topic, payload, auto_prefix_topic=False)
+        self._set_camera_calibrations()
+        self._cameras = self._environment.get_board_group(AprilCameraBoard)
 
-        self._cameras: BoardGroup[AprilCameraBoard, Backend]
-        try:
-            # Setup calibration file locations
-            from .vision.calibrations import __file__ as calibrations
+        for cam in self._cameras:
+            # Set marker sizes.
+            cam._backend.set_marker_sizes(
+                MARKER_SIZES, marker_offset=marker_offset)
 
-            # get any pre-defined calibration locations
-            current_calibrations = os.environ.get('OPENCV_CALIBRATIONS', '')
-            calibration_locs = ':'.join(
-                [current_calibrations, os.path.dirname(calibrations)])
-            os.environ['OPENCV_CALIBRATIONS'] = calibration_locs.strip(':')
-
-            self._cameras = self._environment.get_board_group(AprilCameraBoard)
-            # setup marker sizes
-            for cam in self._cameras:
-                cam._backend.set_marker_sizes(
-                    MARKER_SIZES, marker_offset=marker_offset)
-
-                # Insert a reference to the MQTT client into the camera backend
-                # to allow frames to be sent to the website
-                cam._backend._mqtt_publish = mqtt_publish_callback
-        except NotImplementedError:
-            LOGGER.warning("No camera backend found")
+            # Insert a reference to the MQTT client into the camera backend
+            # to allow frames to be sent to the website
+            if self._mqtt.is_connected:
+                cam._backend._mqtt_publish = partial(
+                    self._mqtt.publish,
+                    auto_prefix_topic=False,
+                )
 
     def _init_power_board(self) -> None:
         """
