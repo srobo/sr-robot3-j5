@@ -17,7 +17,7 @@ This project uses the [Poetry](https://python-poetry.org) dependency and virtual
 
 You will also need:
 
-- Python 3.6+
+- Python 3.8+
 - Make
 
 ### Setup
